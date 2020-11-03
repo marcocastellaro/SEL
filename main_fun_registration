@@ -1,0 +1,104 @@
+#!/bin/bash
+
+# GIANMARCO PALOMBA mat. 1185274
+# TESI: IMAGING FOR NEUROSCIENCE
+# ARGOMENTO: SLOWLY EXPANDING/EVOLVING LESIONS
+             MULTIPLE SCLEROSIS
+
+
+# Function: Registrazione delle immagini T1-weighted e calcolo dello Jacobiano  
+
+registration() 
+{
+
+folder_reg=/mnt/f/utente/tesi/registrazione_sel/$5/
+
+/mnt/f/utente/tesi/software/code/sienapd $1 $2 -o $folder_reg -d -r1 $3 -r2 $4
+
+cd $folder_reg
+
+######## ANTs Registration #########
+
+fixed=A_halfwayto_B.nii.gz
+moved=B_halfwayto_A.nii.gz
+
+antsRegistration -d 3 --float 0 -o [matrice_T1,image_reg_T1.nii.gz] -n Linear -w [0.005,0.995] -u 0 -r [$fixed,$moved,1] -t Syn[0.1,3,0] -m CC[$fixed,$moved,1,4] -c [100x70x50x20,1e-6,20] -f 8x4x2x1 -s 3x2x1x0vox
+
+#### Jacobian Determinant Image ####
+
+CreateJacobianDeterminantImage 3 matrice_T11Warp.nii.gz image_detJ.nii.gz
+
+mkdir registration_output
+
+mv image_detJ.nii.gz $folder_reg/registration_output/
+
+mv image_reg_T1.nii.gz $folder_reg/registration_output/
+
+}
+
+
+
+############################## MAIN SCRIPT ##############################
+
+# Jacobian Analisys
+
+########## pz n.000004 ###########
+# reference 20150413
+# follow up 20190304
+
+input1=/mnt/f/utente/tesi/dati_sel/000004/20150413/T13DTFE_N4.nii.gz  # immagine reference
+input2=/mnt/f/utente/tesi/dati_sel/000004/20190304/T13DTFE_N4.nii.gz  # immagine follow up
+
+mask1=/mnt/f/utente/tesi/dati_sel/000004/20150413/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000004/20190304/ct/BrainExtractionMask.nii.gz
+
+pz=000004
+
+registration $input1 $input2 $mask1 $mask2 $pz
+
+
+########## pz n.000027 ###########
+# reference 20140630
+# follow up 20190715
+
+input1=/mnt/f/utente/tesi/dati_sel/000027/20140630/T13DTFE_N4.nii.gz
+input2=/mnt/f/utente/tesi/dati_sel/000027/20190715/T13DTFE_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000027/20140630/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000027/20190715/ct/BrainExtractionMask.nii.gz
+
+pz=000027
+
+registration $input1 $input2 $mask1 $mask2 $pz
+
+
+########## pz n.000128 ###########
+# reference 20170623
+# follow up 20200120
+
+input1=/mnt/f/utente/tesi/dati_sel/000128/20170623/T13DTFE_N4.nii.gz
+input2=/mnt/f/utente/tesi/dati_sel/000128/20200120/T13DTFE_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000128/20170623/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000128/20200120/ct/BrainExtractionMask.nii.gz
+
+pz=000128
+
+registration $input1 $input2 $mask1 $mask2 $pz
+
+
+########## pz n.000298 ###########
+# reference 20161121
+# follow up 20190930
+
+input1=/mnt/f/utente/tesi/dati_sel/000298/20161121/T13DTFE_N4.nii.gz
+input2=/mnt/f/utente/tesi/dati_sel/000298/20190930/T13DTFE_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000298/20161121/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000298/20190930/ct/BrainExtractionMask.nii.gz
+
+pz=000298
+
+registration $input1 $input2 $mask1 $mask2 $pz
+
+
