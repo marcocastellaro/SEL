@@ -1,0 +1,183 @@
+#!/bin/bash
+
+# GIANMARCO PALOMBA mat. 1185274
+# TESI: IMAGING FOR NEUROSCIENCE
+# ARGOMENTO: SLOWLY EXPANDING/EVOLVING LESIONS
+#            MULTIPLE SCLEROSIS
+
+
+############################## MAIN SCRIPT ##############################
+
+# Jacobian Analisys
+
+# 1) Registration
+
+
+########## pz n.000027 ###########
+# reference 20140630
+# follow up 20190715
+
+################### T1 linear Interpolation ######################
+
+input1=/mnt/f/utente/tesi/dati_sel/000027/20140630/T13DTFE_N4.nii.gz
+input2=/mnt/f/utente/tesi/dati_sel/000027/20190715/T13DTFE_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000027/20140630/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000027/20190715/ct/BrainExtractionMask.nii.gz
+
+output=/mnt/f/utente/tesi/registrazione_sel/000027/test_lineare_t1
+mkdir $output
+
+./registration_linear_t1 $input1 $input2 $mask1 $mask2 $output
+
+##################### T1 sinc Interpolation ######################
+
+input1=/mnt/f/utente/tesi/dati_sel/000027/20140630/T13DTFE_N4.nii.gz
+input2=/mnt/f/utente/tesi/dati_sel/000027/20190715/T13DTFE_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000027/20140630/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000027/20190715/ct/BrainExtractionMask.nii.gz
+
+output=/mnt/f/utente/tesi/registrazione_sel/000027/test_sinc_t1
+mkdir $output
+
+./registration_sinc_t1 $input1 $input2 $mask1 $mask2 $output
+
+##################### FLAIR linear Interpolation ####################
+
+input1=/mnt/f/utente/tesi/dati_sel/000027/20140630/3DFLAIR_N4.nii.gz
+input2=/mnt/f/utente/tesi/dati_sel/000027/20190715/3DFLAIR_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000027/20140630/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000027/20190715/ct/BrainExtractionMask.nii.gz
+
+output=/mnt/f/utente/tesi/registrazione_sel/000027/test_lineare_flair
+mkdir $output
+
+./registration_linear_flair $input1 $input2 $mask1 $mask2 $output
+
+##################### FLAIR sinc Interpolation ####################
+
+input1=/mnt/f/utente/tesi/dati_sel/000027/20140630/3DFLAIR_N4.nii.gz
+input2=/mnt/f/utente/tesi/dati_sel/000027/20190715/3DFLAIR_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000027/20140630/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000027/20190715/ct/BrainExtractionMask.nii.gz
+
+output=/mnt/f/utente/tesi/registrazione_sel/000027/test_sinc_flair
+mkdir $output
+
+./registration_sinc_flair $input1 $input2 $mask1 $mask2 $output
+
+########## pz n.000128 ###########
+# reference 20170623
+# follow up 20200120
+
+################### T1 linear Interpolation ######################
+
+input1=/mnt/f/utente/tesi/dati_sel/000128/20170623/T13DTFE_N4.nii.gz
+input2=/mnt/f/utente/tesi/dati_sel/000128/20200120/T13DTFE_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000128/20170623/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000128/20200120/ct/BrainExtractionMask.nii.gz
+
+output=/mnt/f/utente/tesi/registrazione_sel/000128/test_lineare_t1
+mkdir $output
+
+./registration_linear_t1 $input1 $input2 $mask1 $mask2 $output
+
+##################### T1 sinc Interpolation ######################
+
+input1=/mnt/f/utente/tesi/dati_sel/000128/20170623/T13DTFE_N4.nii.gz
+input2=/mnt/f/utente/tesi/dati_sel/000128/20200120/T13DTFE_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000128/20170623/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000128/20200120/ct/BrainExtractionMask.nii.gz
+
+output=/mnt/f/utente/tesi/registrazione_sel/000128/test_sinc_t1
+mkdir $output
+
+./registration_sinc_t1 $input1 $input2 $mask1 $mask2 $output
+
+##################### FLAIR linear Interpolation ####################
+
+input1=/mnt/f/utente/tesi/dati_sel/000128/20170623/3DFLAIR_N4.nii.gz
+input2=/mnt/f/utente/tesi/dati_sel/000128/20200120/3DFLAIR_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000128/20170623/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000128/20200120/ct/BrainExtractionMask.nii.gz
+
+output=/mnt/f/utente/tesi/registrazione_sel/000128/test_lineare_flair
+mkdir $output
+
+./registration_linear_flair $input1 $input2 $mask1 $mask2 $output
+
+##################### FLAIR sinc Interpolation ####################
+
+input1=/mnt/f/utente/tesi/dati_sel/000128/20170623/3DFLAIR_N4.nii.gz
+input2=/mnt/f/utente/tesi/dati_sel/000128/20200120/3DFLAIR_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000128/20170623/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000128/20200120/ct/BrainExtractionMask.nii.gz
+
+output=/mnt/f/utente/tesi/registrazione_sel/000128/test_sinc_flair
+mkdir $output
+
+./registration_sinc_flair $input1 $input2 $mask1 $mask2 $output
+
+########## pz n.000298 ###########
+# reference 20161121
+# follow up 20190930
+
+################### T1 linear Interpolation ######################
+
+input1=/mnt/f/utente/tesi/dati_sel/000298/20161121/T13DTFE_N4.nii.gz
+input2=/mnt/f/utente/tesi/dati_sel/000298/20190930/T13DTFE_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000298/20161121/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000298/20190930/ct/BrainExtractionMask.nii.gz
+
+output=/mnt/f/utente/tesi/registrazione_sel/000298/test_lineare_t1
+mkdir $output
+
+./registration_linear_t1 $input1 $input2 $mask1 $mask2 $output
+
+##################### T1 sinc Interpolation ######################
+
+input1=/mnt/f/utente/tesi/dati_sel/000298/20161121/T13DTFE_N4.nii.gz
+input2=/mnt/f/utente/tesi/dati_sel/000298/20190930/T13DTFE_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000298/20161121/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000298/20190930/ct/BrainExtractionMask.nii.gz
+
+output=/mnt/f/utente/tesi/registrazione_sel/000298/test_sinc_t1
+mkdir $output
+
+./registration_sinc_t1 $input1 $input2 $mask1 $mask2 $output
+
+##################### FLAIR linear Interpolation ####################
+
+input1=/mnt/f/utente/tesi/dati_sel/000298/20161121/3DFLAIR_N4.nii.gz
+input2=/mnt/f/utente/tesi/dati_sel/000298/20190930/3DFLAIR_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000298/20161121/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000298/20190930/ct/BrainExtractionMask.nii.gz
+
+output=/mnt/f/utente/tesi/registrazione_sel/000298/test_lineare_flair
+mkdir $output
+
+./registration_linear_flair $input1 $input2 $mask1 $mask2 $output
+
+##################### FLAIR sinc Interpolation ####################
+
+input1=/mnt/f/utente/tesi/dati_sel/000298/20161121/3DFLAIR_N4.nii.gz
+input2=/mnt/f/utente/tesi/dati_sel/000298/20190930/3DFLAIR_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000298/20161121/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000298/20190930/ct/BrainExtractionMask.nii.gz
+
+output=/mnt/f/utente/tesi/registrazione_sel/000298/test_sinc_flair
+mkdir $output
+
+./registration_sinc_flair $input1 $input2 $mask1 $mask2 $output
+
