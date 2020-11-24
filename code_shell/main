@@ -1,0 +1,98 @@
+#!/bin/bash
+
+# GIANMARCO PALOMBA mat. 1185274
+# TESI: IMAGING FOR NEUROSCIENCE
+# ARGOMENTO: SLOWLY EXPANDING/EVOLVING LESIONS
+#            MULTIPLE SCLEROSIS
+
+
+############################## MAIN SCRIPT ##############################
+
+# Jacobian Analisys
+
+# 1) Registration
+
+########## pz n.000004 ###########
+# baseline 20150413
+# follow up 20190304
+
+input1_T1=/mnt/f/utente/tesi/dati_sel/000004/20150413/T13DTFE_N4.nii.gz
+input2_T1=/mnt/f/utente/tesi/dati_sel/000004/20190304/T13DTFE_N4.nii.gz
+
+input1_FLAIR=/mnt/f/utente/tesi/dati_sel/000004/20150413/3DFLAIR_N4.nii.gz
+input2_FLAIR=/mnt/f/utente/tesi/dati_sel/000004/20190304/3DFLAIR_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000004/20150413/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000004/20190304/ct/BrainExtractionMask.nii.gz
+
+lesion_mask1=/mnt/f/utente/tesi/dati_sel/000004/20150413/baseline_2ch_hard_seg.nii.gz
+lesion_mask2=/mnt/f/utente/tesi/dati_sel/000004/20190304/baseline_2ch_hard_seg.nii.gz
+
+output=/mnt/f/utente/tesi/registrazione_sel/000004/test
+#mkdir $output
+
+./registration $input1_T1 $input2_T1 $input1_FLAIR $input2_FLAIR $mask1 $mask2 $lesion_mask1 $lesion_mask2 $output
+
+########## pz n.000027 ###########
+# baseline 20140630
+# follow up 20190715
+
+input1_T1=/mnt/f/utente/tesi/dati_sel/000027/20140630/T13DTFE_N4.nii.gz
+input2_T1=/mnt/f/utente/tesi/dati_sel/000027/20190715/T13DTFE_N4.nii.gz
+
+input1_FLAIR=/mnt/f/utente/tesi/dati_sel/000027/20140630/3DFLAIR_N4.nii.gz
+input2_FLAIR=/mnt/f/utente/tesi/dati_sel/000027/20190715/3DFLAIR_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000027/20140630/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000027/20190715/ct/BrainExtractionMask.nii.gz
+
+lesion_mask1=/mnt/f/utente/tesi/dati_sel/000027/20140630/baseline_2ch_hard_seg.nii.gz
+lesion_mask2=/mnt/f/utente/tesi/dati_sel/000027/20190715/baseline_2ch_hard_seg.nii.gz
+
+output=/mnt/f/utente/tesi/registrazione_sel/000027/test
+#mkdir $output
+
+./registration $input1_T1 $input2_T1 $input1_FLAIR $input2_FLAIR $mask1 $mask2 $lesion_mask1 $lesion_mask2 $output
+
+########## pz n.000128 ###########
+# baseline 20170623
+# follow up 20200120
+
+input1_T1=/mnt/f/utente/tesi/dati_sel/000128/20170623/T13DTFE_N4.nii.gz
+input2_T1=/mnt/f/utente/tesi/dati_sel/000128/20200120/T13DTFE_N4.nii.gz
+
+input1_FLAIR=/mnt/f/utente/tesi/dati_sel/000128/20170623/3DFLAIR_N4.nii.gz
+input2_FLAIR=/mnt/f/utente/tesi/dati_sel/000128/20200120/3DFLAIR_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000128/20170623/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000128/20200120/ct/BrainExtractionMask.nii.gz
+
+lesion_mask1=/mnt/f/utente/tesi/dati_sel/000128/20170623/baseline_2ch_hard_seg.nii.gz
+lesion_mask2=/mnt/f/utente/tesi/dati_sel/000128/20200120/baseline_2ch_hard_seg.nii.gz
+
+output=/mnt/f/utente/tesi/registrazione_sel/000128/test
+#mkdir $output
+
+./registration $input1_T1 $input2_T1 $input1_FLAIR $input2_FLAIR $mask1 $mask2 $lesion_mask1 $lesion_mask2 $output
+
+########## pz n.000298 ###########
+# baseline 20161121
+# follow up 20190930
+
+input1_T1=/mnt/f/utente/tesi/dati_sel/000298/20161121/T13DTFE_N4.nii.gz
+input2_T1=/mnt/f/utente/tesi/dati_sel/000298/20190930/T13DTFE_N4.nii.gz
+
+input1_FLAIR=/mnt/f/utente/tesi/dati_sel/000298/20161121/3DFLAIR_N4.nii.gz
+input2_FLAIR=/mnt/f/utente/tesi/dati_sel/000298/20190930/3DFLAIR_N4.nii.gz
+
+mask1=/mnt/f/utente/tesi/dati_sel/000298/20161121/ct/BrainExtractionMask.nii.gz
+mask2=/mnt/f/utente/tesi/dati_sel/000298/20190930/ct/BrainExtractionMask.nii.gz
+
+lesion_mask1=/mnt/f/utente/tesi/dati_sel/000298/20161121/baseline_2ch_hard_seg.nii.gz
+lesion_mask2=/mnt/f/utente/tesi/dati_sel/000298/20190930/baseline_2ch_hard_seg.nii.gz
+
+output=/mnt/f/utente/tesi/registrazione_sel/000298/test
+#mkdir $output
+
+./registration $input1_T1 $input2_T1 $input1_FLAIR $input2_FLAIR $mask1 $mask2 $lesion_mask1 $lesion_mask2 $output
+
