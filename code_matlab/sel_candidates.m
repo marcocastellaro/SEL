@@ -1,4 +1,4 @@
-function [SEL_1, CC_SEL_1] = sel_candidates(detJ,lesions_mask_baseline,lesions_mask_follow,date1,date2)
+function [SEL_1, CC_SEL_1, jacobian_mask_EJ1] = sel_candidates(detJ,lesions_mask_baseline,lesions_mask_follow,date1,date2)
 
 %% Calcolo in anni la differenza tra la data di acquisizione immagini baseline e follow-up
 date_baseline = datenum(date1); 
@@ -7,7 +7,7 @@ diff = date_follow - date_baseline;
 y = diff/365.2425;
 
 %% Normalizzazione della logaritmo del determinante dello Jacobiano
-normalization_detJ = detJ./y;
+normalized_detJ = detJ./y;
 
 %% Analisi delle componenti connesse delle maschere di lesioni baseline e follow-up
 % Componenti connesse e centroidi baseline
@@ -130,7 +130,7 @@ CC_follow_useful = unique(L_follow(ind_voxel_CC_baseline));
 % jacobian -> normalization_detJ
 
 EJ1 = 0.125;
-jacobian_mask_EJ1 = detJ >= 0.125;
+jacobian_mask_EJ1 = normalized_detJ >= EJ1;
 
 % Salvo questa maschera
 % template_jacobian = log_detJ;
@@ -154,7 +154,7 @@ CC_jacobian_lesions_mask_1 = bwconncomp(jacobian_lesions_mask_1,18);
 
 %% DILATAZIONE DELLE COMPONENTI CONNESSE E SCELTA DEI SEL CANDIDATI
 
-[SEL_1, CC_SEL_1] = dilation(jacobian_lesions_mask_1,detJ);
+[SEL_1, CC_SEL_1] = dilation_sel_selection(jacobian_lesions_mask_1,normalized_detJ);
 
 %% SECONDA MASCHERA: lesions_mask_baseline
 
@@ -167,7 +167,7 @@ CC_jacobian_lesions_mask_2 = bwconncomp(jacobian_lesions_mask_2,18);
 
 %% DILATAZIONE DELLE COMPONENTI CONNESSE
 
-[SEL_2, CC_SEL_2] = dilation(jacobian_lesions_mask_2,detJ);
+[SEL_2, CC_SEL_2] = dilation_sel_selection(jacobian_lesions_mask_2,normalized_detJ);
 
 end
 
