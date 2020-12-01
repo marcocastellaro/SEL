@@ -1,4 +1,4 @@
-function [SEL, CC_SEL] = dilation(jacobian_mask, log_detJ)
+function [SEL, CC_SEL] = dilation_sel_selection(jacobian_mask, detJ)
 
 % Ho definito come elemento per effettuare la dilatazione una sfera di
 % raggio 10 pixel, in quanto una dimensione minore risulta essere
@@ -20,13 +20,15 @@ EJ2 = 0.04;
 % Il ciclo while inizierà con il primo confronto tra la prima maschera dilatata
 % ottenuta in precedenza e la maschera iniziale
 prev_dilate_mask = jacobian_mask; 
-i = 1;
+%i = 1;
 while (~isequal(dilate_mask,prev_dilate_mask)) % condizione: ~isequal = 1 se le due matrici sono diverse 
     prev_dilate_mask = dilate_mask;            % quando le matrici dilatate allo step i e i+1 sono uguali esce dal ciclo
-    tmp = log_detJ.*dilate_mask;
+    
+    % Al posto di log_detJ devo mettere normalization_detJ 
+    tmp = detJ.*dilate_mask;    
     tmp = tmp >= EJ2;
     dilate_mask = imdilate(tmp,SE); 
-    i = i + 1;
+    %i = i + 1;
 end
 
 % Definisco le componenti connesse della maschera ottenuta; questi sono i
