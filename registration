@@ -42,8 +42,8 @@ fslmaths FLAIR_to_T1_fol.nii.gz -mas $B_brain_mask FLAIR_to_T1_fol_brain.nii.gz
 
 # Applicare c3d_affine per convertire le immagini halfway da FSL a RAS (ANTs)
 # Utilizzo A e B (reoriented) che sono rispettivamente le immagini T1 reference e T1 follow-up
- c3d_affine_tool -ref A.nii.gz -src A.nii.gz A_halfwayto_B.mat -fsl2ras -oitk A_halfwayto_B_ANTs.mat
- c3d_affine_tool -ref A.nii.gz -src B.nii.gz B_halfwayto_A.mat -fsl2ras -oitk B_halfwayto_A_ANTs.mat 
+c3d_affine_tool -ref A.nii.gz -src A.nii.gz A_halfwayto_B.mat -fsl2ras -oitk A_halfwayto_B_ANTs.mat
+c3d_affine_tool -ref A.nii.gz -src B.nii.gz B_halfwayto_A.mat -fsl2ras -oitk B_halfwayto_A_ANTs.mat 
 
 # Applico le trasformazioni ottenute con c3d alle T1 e FLAIR di partenza per confrontarle con le halfway
 antsApplyTransforms -d 3 --float 0 -i A.nii.gz -r A.nii.gz -o T1_A_halfwayto_B_ANTs.nii.gz -n Linear -t A_halfwayto_B_ANTs.mat
