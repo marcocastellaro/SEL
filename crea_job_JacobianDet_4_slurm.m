@@ -95,9 +95,9 @@ for k=3:length(list)
                     'srun registration  $input1_T1 $input2_T1 $input1_FLAIR $input2_FLAIR $mask1 $mask2 $lesion_mask1 $lesion_mask2 $output\n'...
                     '\n\n']);
                 
-                fclose(ID_file);
+               fclose(ID_file);
                 
-                fprintf(ID_file_recap,['sbatch ' fullfile(jobdir, jobName) '\n']);
+               fprintf(ID_file_recap,['sbatch ' fullfile(jobdir, jobName) '\n']);
     end
             
 end
