@@ -4,9 +4,9 @@ clear all
 
 % Gestione deelle differenti piattaforme da cui si chiama il codice
 
-base_directory = '/nfsd/biopetmri3/biopetmri_tesi/PalombaGianmarco_2020';
+%base_directory = '/nfsd/biopetmri3/biopetmri_tesi/PalombaGianmarco_2020';
 % ALTERNATIVA PC LOCALE 
-%base_directory = 'F:\Utente\TESI\';
+base_directory = 'F:\Utente\TESI\';
 
 data_path=fullfile(base_directory,'Dati');
 output_path=fullfile(base_directory,'Output');
@@ -92,7 +92,7 @@ for k=3:length(list)
                     'lesion_mask2=' fullfile(subj_path,followup,'nicMS_Lesion','lesions.nii.gz') '\n'...
                     'output=' fullfile(output_path,subjID,[baseline '_' followup]) '\n'...
                     'mkdir -p $output\n'...
-                    'srun registration  $input1_T1 $input2_T1 $input1_FLAIR $input2_FLAIR $mask1 $mask2 $lesion_mask1 $lesion_mask2 $output\n'...
+                    'srun ./registration  $input1_T1 $input2_T1 $input1_FLAIR $input2_FLAIR $mask1 $mask2 $lesion_mask1 $lesion_mask2 $output\n'...
                     '\n\n']);
                 
                fclose(ID_file);
