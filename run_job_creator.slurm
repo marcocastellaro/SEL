@@ -10,5 +10,4 @@
 #SBATCH --partition allgroups
 #SBATCH --mem 16G
 
-
 srun matlab < crea_job_LesionsMask_4_slurm.m
