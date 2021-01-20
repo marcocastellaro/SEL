@@ -4,9 +4,9 @@ clc
 
 % Gestione deelle differenti piattaforme da cui si chiama il codice
 
-%base_directory = '/nfsd/biopetmri3/biopetmri_tesi/PalombaGianmarco_2020';
+base_directory = '/nfsd/biopetmri3/biopetmri_tesi/PalombaGianmarco_2020';
 % ALTERNATIVA PC LOCALE 
-base_directory = 'F:\Utente\TESI\';
+%base_directory = 'F:\Utente\TESI\';
 
 data_path=fullfile(base_directory,'Dati');
 output_path=fullfile(base_directory,'Output');
