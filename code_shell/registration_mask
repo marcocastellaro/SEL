@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Dati in ingresso alla function: 
+# input1,mask1 indica timepoint REFERENCE
+# input2, mask2 indica timepoint FOLLOW-UP
+
+lesion_mask1=$1
+lesion_mask2=$2
+output=$3
+
+cd $output
+
+antsApplyTransforms -d 3 --float 0 -i $lesion_mask1.nii.gz -r T1_A_halfwayto_B_ANTs.nii.gz -o lesion_prob_base_halfway_ANTs.nii.gz -n Linear -t A_halfwayto_B_ANTs.mat
+antsApplyTransforms -d 3 --float 0 -i $lesion_mask2.nii.gz -r T1_A_halfwayto_B_ANTs.nii.gz -o lesion_prob_foll_halfway_ANTs.nii.gz -n Linear -t B_halfwayto_A_ANTs.mat
+
+mv lesion_prob_base_halfway_ANTs.nii.gz $output/Jacobian_output/
+mv lesion_prob_foll_halfway_ANTs.nii.gz $output/Jacobian_output/
