@@ -17,65 +17,68 @@ output=$9
 cd $output
 
 # Oriento le FLAIR in modo che coincidano con le T1 ottenute in uscita da sienapd
-fslreorient2std $input1_FLAIR FLAIR_baseline.nii.gz
-fslreorient2std $input2_FLAIR FLAIR_followup.nii.gz
+#fslreorient2std $input1_FLAIR FLAIR_baseline.nii.gz
+#fslreorient2std $input2_FLAIR FLAIR_followup.nii.gz
 
 # Portare le immagini T1-weighted nello spazio halfway 
-sienapd $input1_T1 $input2_T1 -o $output -d -r1 $mask1 -r2 $mask2
+#sienapd $input1_T1 $input2_T1 -o $output -d -r1 $mask1 -r2 $mask2
 
-A=A.nii.gz # T1 baseline 
-B=B.nii.gz # T1 follow-up
-A_brain_mask=A_brain_mask.nii.gz
-B_brain_mask=B_brain_mask.nii.gz
+#A=A.nii.gz # T1 baseline 
+#B=B.nii.gz # T1 follow-up
+#A_brain_mask=A_brain_mask.nii.gz
+#B_brain_mask=B_brain_mask.nii.gz
 
 # Coregistrare l'immagini FLAIR all'immagini T1-weighted (REFERENCE)
-antsRegistration -d 3 --float 0 -o [matrice_ref,FLAIR_to_T1_baseline.nii.gz] -n Linear -u 0 -w [0.005,0.995] -r [$A,FLAIR_baseline.nii.gz,1] -t Rigid[0.1] -m MI[$A,FLAIR_baseline.nii.gz,1,32,Regular,0.25] -c [1000x500x250x100,1e-6,10] -f 8x4x2x1 -s 3x2x1x0vox -t Affine[0.1] -m MI[$A,FLAIR_baseline.nii.gz,1,32,Regular,0.25] -c [1000x500x250x100,1e-6,10] -f 8x4x2x1 -s 3x2x1x0vox 
+#antsRegistration -d 3 --float 0 -o [matrice_ref,FLAIR_to_T1_baseline.nii.gz] -n Linear -u 0 -w [0.005,0.995] -r [$A,FLAIR_baseline.nii.gz,1] -t Rigid[0.1] -m MI[$A,FLAIR_baseline.nii.gz,1,32,Regular,0.25] -c [1000x500x250x100,1e-6,10] -f 8x4x2x1 -s 3x2x1x0vox -t Affine[0.1] -m MI[$A,FLAIR_baseline.nii.gz,1,32,Regular,0.25] -c [1000x500x250x100,1e-6,10] -f 8x4x2x1 -s 3x2x1x0vox 
 
 # Brain Extraction della FLAIR baseline coregistrata
-fslmaths FLAIR_to_T1_baseline.nii.gz -mas $A_brain_mask FLAIR_to_T1_baseline_brain.nii.gz
+#fslmaths FLAIR_to_T1_baseline.nii.gz -mas $A_brain_mask FLAIR_to_T1_baseline_brain.nii.gz
 
 # Coregistrare l'immagini FLAIR all'immagini T1-weighted (FOLLOW-UP)
-antsRegistration -d 3 --float 0 -o [matrice_fol,FLAIR_to_T1_fol.nii.gz] -n Linear -u 0 -w [0.005,0.995] -r [$B,FLAIR_followup.nii.gz,1] -t Rigid[0.1] -m MI[$B,FLAIR_followup.nii.gz,1,32,Regular,0.25] -c [1000x500x250x100,1e-6,10] -f 8x4x2x1 -s 3x2x1x0vox -t Affine[0.1] -m MI[$B,FLAIR_followup.nii.gz,1,32,Regular,0.25] -c [1000x500x250x100,1e-6,10] -f 8x4x2x1 -s 3x2x1x0vox 
+#antsRegistration -d 3 --float 0 -o [matrice_fol,FLAIR_to_T1_fol.nii.gz] -n Linear -u 0 -w [0.005,0.995] -r [$B,FLAIR_followup.nii.gz,1] -t Rigid[0.1] -m MI[$B,FLAIR_followup.nii.gz,1,32,Regular,0.25] -c [1000x500x250x100,1e-6,10] -f 8x4x2x1 -s 3x2x1x0vox -t Affine[0.1] -m MI[$B,FLAIR_followup.nii.gz,1,32,Regular,0.25] -c [1000x500x250x100,1e-6,10] -f 8x4x2x1 -s 3x2x1x0vox 
 
 # Brain Extraction della FLAIR follow-up coregistrata
-fslmaths FLAIR_to_T1_fol.nii.gz -mas $B_brain_mask FLAIR_to_T1_fol_brain.nii.gz
+#fslmaths FLAIR_to_T1_fol.nii.gz -mas $B_brain_mask FLAIR_to_T1_fol_brain.nii.gz
 
 # Applicare c3d_affine per convertire le immagini halfway da FSL a RAS (ANTs)
 # Utilizzo A e B (reoriented) che sono rispettivamente le immagini T1 reference e T1 follow-up
- c3d_affine_tool -ref A.nii.gz -src A.nii.gz A_halfwayto_B.mat -fsl2ras -oitk A_halfwayto_B_ANTs.mat
- c3d_affine_tool -ref A.nii.gz -src B.nii.gz B_halfwayto_A.mat -fsl2ras -oitk B_halfwayto_A_ANTs.mat 
+#c3d_affine_tool -ref A.nii.gz -src A.nii.gz A_halfwayto_B.mat -fsl2ras -oitk A_halfwayto_B_ANTs.mat
+#c3d_affine_tool -ref A.nii.gz -src B.nii.gz B_halfwayto_A.mat -fsl2ras -oitk B_halfwayto_A_ANTs.mat 
 
 # Applico le trasformazioni ottenute con c3d alle T1 e FLAIR di partenza per confrontarle con le halfway
-antsApplyTransforms -d 3 --float 0 -i A.nii.gz -r A.nii.gz -o T1_A_halfwayto_B_ANTs.nii.gz -n Linear -t A_halfwayto_B_ANTs.mat
-antsApplyTransforms -d 3 --float 0 -i B.nii.gz -r A.nii.gz -o T1_B_halfwayto_A_ANTs.nii.gz -n Linear -t B_halfwayto_A_ANTs.mat
-antsApplyTransforms -d 3 --float 0 -i FLAIR_to_T1_baseline.nii.gz -r FLAIR_to_T1_baseline.nii.gz -o FLAIR_A_halfwayto_B_ANTs.nii.gz -n Linear -t A_halfwayto_B_ANTs.mat
-antsApplyTransforms -d 3 --float 0 -i FLAIR_to_T1_fol.nii.gz -r FLAIR_to_T1_baseline.nii.gz -o FLAIR_B_halfwayto_A_ANTs.nii.gz -n Linear -t B_halfwayto_A_ANTs.mat
+#antsApplyTransforms -d 3 --float 0 -i A.nii.gz -r A.nii.gz -o T1_A_halfwayto_B_ANTs.nii.gz -n Linear -t A_halfwayto_B_ANTs.mat
+#antsApplyTransforms -d 3 --float 0 -i B.nii.gz -r A.nii.gz -o T1_B_halfwayto_A_ANTs.nii.gz -n Linear -t B_halfwayto_A_ANTs.mat
+#antsApplyTransforms -d 3 --float 0 -i FLAIR_to_T1_baseline.nii.gz -r FLAIR_to_T1_baseline.nii.gz -o FLAIR_A_halfwayto_B_ANTs.nii.gz -n Linear -t A_halfwayto_B_ANTs.mat
+#antsApplyTransforms -d 3 --float 0 -i FLAIR_to_T1_fol.nii.gz -r FLAIR_to_T1_baseline.nii.gz -o FLAIR_B_halfwayto_A_ANTs.nii.gz -n Linear -t B_halfwayto_A_ANTs.mat
 
 ######## ANTs Registration Syn #########
-fixed_T1=A_brain.nii.gz
-moved_T1=B_brain.nii.gz
-fixed_FLAIR=FLAIR_to_T1_baseline_brain.nii.gz
-moved_FLAIR=FLAIR_to_T1_fol_brain.nii.gz
+#fixed_T1=A_brain.nii.gz
+#moved_T1=B_brain.nii.gz
+#fixed_FLAIR=FLAIR_to_T1_baseline_brain.nii.gz
+#moved_FLAIR=FLAIR_to_T1_fol_brain.nii.gz
 
-antsRegistration -d 3 --float 0 -o [matrice_T1,image_reg_T1.nii.gz] -n Linear -w [0.005,0.995] -u 0 -r B_halfwayto_A_ANTs.mat -q A_halfwayto_B_ANTs.mat -t Syn[0.1,3,0] -m CC[$fixed_T1,$moved_T1,1,4] -m CC[$fixed_FLAIR,$moved_FLAIR,1,4] -c [100x70x50x20,1e-6,20] -f 8x4x2x1 -s 3x2x1x0vox 
+#antsRegistration -d 3 --float 0 -o [matrice_T1,image_reg_T1.nii.gz] -n Linear -w [0.005,0.995] -u 0 -r B_halfwayto_A_ANTs.mat -q A_halfwayto_B_ANTs.mat -t Syn[0.1,3,0] -m CC[$fixed_T1,$moved_T1,1,4] -m CC[$fixed_FLAIR,$moved_FLAIR,1,4] -c [100x70x50x20,1e-6,20] -f 8x4x2x1 -s 3x2x1x0vox 
 #antsRegistration -d 3 --float 0 -o [matrice_T1,image_reg_T1.nii.gz] -n Linear -w [0.005,0.995] -u 0 -r B_halfwayto_A_ANTs.mat -q A_halfwayto_B_ANTs.mat -t Rigid[0.1] -m MI[$fixed_T1,$moved_T1,1,32,Regular,0.25] -m MI[$fixed_FLAIR,$moved_FLAIR,1,32,Regular,0.25] -c [1,1e-6,20] -f 8 -s 0vox -v 1
 
 #### Jacobian Determinant Image ####
-CreateJacobianDeterminantImage 3 matrice_T11Warp.nii.gz detJ.nii.gz
-mkdir Jacobian_output
+#CreateJacobianDeterminantImage 3 matrice_T11Warp.nii.gz detJ.nii.gz
+#mkdir Jacobian_output
+
 #fslmaths detJ.nii.gz -log log_detJ.nii.gz
-#mv log_detJ.nii.gz $output/Jacobian_output/
+
+fslmaths detJ.nii.gz -sub 1 nak_detJ.nii.gz
+mv nak_detJ.nii.gz $output/Jacobian_output/
 #mv image_reg_T1.nii.gz $output/Jacobian_output/
 
 # Visualizzazione delle immagini e generazione screenshot
 #fsleyes render  --scene lightbox -of /mnt/f/Utente/TESI/Registrazione_SEL/screenshot/prova.png --worldLoc -4.186868504221707 0.41046870983259964 25.751208020299174 --displaySpace /mnt/f/Utente/TESI/Registrazione_SEL/000128/test/Jacobian_output/image_detJ.nii.gz --zaxis 2 --sliceSpacing 3.706666665316249 --zrange 85.89996153667569 196.29991242013872 --ncols 10 --nrows 3 --bgColour 0.0 0.0 0.0 --fgColour 1.0 1.0 1.0 --cursorColour 0.0 1.0 0.0 --colourBarLocation top --colourBarLabelSide top-left --colourBarSize 100.0 --labelSize 12 --performance 3 --movieSync /mnt/f/Utente/TESI/Registrazione_SEL/000128/test/Jacobian_output/image_reg_T1.nii.gz --name "image_reg_T1" --overlayType volume --alpha 100.0 --brightness 49.74999999999999 --contrast 49.90029860765409 --cmap greyscale --negativeCmap greyscale --displayRange 0.0 3881511.4024883914 --clippingRange 0.0 3881511.4024883914 --modulateRange 0.0 3843080.5965231596 --gamma 0.0 --cmapResolution 256 --interpolation none --numSteps 100 --blendFactor 0.1 --smoothing 0 --resolution 100 --numInnerSteps 10 --clipMode intersection --volume 0 /mnt/f/Utente/TESI/Registrazione_SEL/000128/test/Jacobian_output/image_detJ.nii.gz --name "image_detJ" --overlayType volume --alpha 45.33333332402011 --brightness 56.54603548739306 --contrast 53.79234085129685 --cmap render3 --negativeCmap greyscale --displayRange 0.0 2.0 --clippingRange 0.0 2.387044315933172 --modulateRange 0.2012594945258178 2.3654028820578517 --gamma 0.0 --cmapResolution 256 --interpolation none --numSteps 100 --blendFactor 0.1 --smoothing 0 --resolution 100 --numInnerSteps 10 --clipMode intersection --volume 0
 
-fslreorient2std $lesion_mask1 lesion_mask_baseline
-fslreorient2std $lesion_mask2 lesion_mask_followup
+#fslreorient2std $lesion_mask1 lesion_mask_baseline
+#fslreorient2std $lesion_mask2 lesion_mask_followup
 
 # Utilizzare come -r T1_halfwayto_ANTs_baseline
-antsApplyTransforms -d 3 --float 0 -i lesion_mask_baseline.nii.gz -r T1_A_halfwayto_B_ANTs.nii.gz -o lesion_mask_base_halfway_ANTs.nii.gz -n NearestNeighbor -t A_halfwayto_B_ANTs.mat
-antsApplyTransforms -d 3 --float 0 -i lesion_mask_followup.nii.gz -r T1_A_halfwayto_B_ANTs.nii.gz -o lesion_mask_foll_halfway_ANTs.nii.gz -n NearestNeighbor -t B_halfwayto_A_ANTs.mat
+#antsApplyTransforms -d 3 --float 0 -i $lesion_mask1.nii.gz -r T1_A_halfwayto_B_ANTs.nii.gz -o lesion_prob_base_halfway_ANTs.nii.gz -n Linear -t A_halfwayto_B_ANTs.mat
+#antsApplyTransforms -d 3 --float 0 -i $lesion_mask2.nii.gz -r T1_A_halfwayto_B_ANTs.nii.gz -o lesion_prob_foll_halfway_ANTs.nii.gz -n Linear -t B_halfwayto_A_ANTs.mat
 
-mv lesion_mask_base_halfway_ANTs.nii.gz $output/Jacobian_output/
-mv lesion_mask_foll_halfway_ANTs.nii.gz $output/Jacobian_output/
+#mv lesion_prob_base_halfway_ANTs.nii.gz $output/Jacobian_output/
+#mv lesion_prob_foll_halfway_ANTs.nii.gz $output/Jacobian_output/
