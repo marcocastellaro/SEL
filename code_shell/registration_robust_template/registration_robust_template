@@ -1,0 +1,195 @@
+#!/bin/sh
+
+export LC_ALL=C
+
+Usage() {
+    cat <<EOF
+
+Usage: registration_robust_template <input_image> <output> [options]
+
+EOF
+    exit 1
+}
+
+T1_baseline=$1
+T1_follow=$2
+T2_baseline=$3
+T2_follow=$4
+FLAIR_baseline=$5
+FLAIR_follow=$6
+lesion_mask_baseline=$7
+lesion_mask_follow=$8
+output=$9
+
+shift 9
+
+while [ _$1 != _ ] ; do
+   
+    if [ $1 = -t1_baseline ] ; then
+        T1_brain_baseline=$2
+        shift 2
+    elif [ $1 = -t1_follow ] ; then
+        T1_brain_follow=$2
+        shift 2
+    elif [ $1 = -t2_baseline ] ; then
+        T2_brain_follow=$2
+        shift 2
+    elif [ $1 = -t2_follow ] ; then
+        T2_brain_follow=$2
+        shift 2
+    elif [ $1 = -flair_baseline ] ; then
+        FLAIR_brain_follow=$2
+        shift 2
+    elif [ $1 = -flair_follow ] ; then
+        FLAIR_brain_follow=$2
+        shift 2    
+    else 
+    Usage
+    fi
+
+done
+
+# FLAIR e T1
+
+cd $output
+
+mkdir registration_robust_template
+
+cd $output/registration_robust_template
+
+mkdir FLAIR_T1
+
+cd $output/registration_robust_template/FLAIR_T1
+
+fslreorient2std $T1_baseline T1_baseline_reo.nii.gz
+
+fslreorient2std $T1_follow T1_follow_reo.nii.gz
+
+fslreorient2std $FLAIR_baseline FLAIR_baseline_reo.nii.gz
+
+fslreorient2std $FLAIR_follow FLAIR_follow_reo.nii.gz
+
+fslreorient2std $T1_brain_baseline T1_brain_baseline_reo.nii.gz
+
+fslreorient2std $T1_brain_follow T1_brain_follow_reo.nii.gz
+
+fslreorient2std $FLAIR_brain_baseline FLAIR_brain_baseline_reo.nii.gz
+
+fslreorient2std $FLAIR_brain_follow FLAIR_brain_follow_reo.nii.gz
+
+# Converto le immagini nel formato .mgz
+# Dove: tp1 (primo timepoint), tp2 (secondo timepoint)...
+
+mri_convert -it nii -ot mgz T1_baseline_reo.nii.gz T1_baseline.mgz
+
+mri_convert -it nii -ot mgz T1_follow_reo.nii.gz T1_follow.mgz
+
+mri_convert -it nii -ot mgz FLAIR_baseline_reo.nii.gz FLAIR_baseline.mgz  
+
+mri_convert -it nii -ot mgz FLAIR_follow_reo.nii.gz FLAIR_follow.mgz
+
+# Coregistrazione spazio halfway delle immagini
+mri_robust_template --mov T1_baseline.mgz T1_follow.mgz --template halfway_T1.mgz --lta T1_baseline_halfway.lta T1_follow_halfway.lta --mapmov T1_baseline_halfway.mgz T1_follow_halfway.mgz --average 0 --iscale --satit --inittp 1 --fixtp --noit
+mri_robust_template --mov FLAIR_baseline.mgz FLAIR_follow.mgz --template halfway_FLAIR.mgz --lta FLAIR_baseline_halfway.lta FLAIR_follow_halfway.lta --mapmov FLAIR_baseline_halfway.mgz FLAIR_follow_halfway.mgz --average 0 --iscale --satit --inittp 1 --fixtp --noit
+
+# Converto i file.lta in file_fsl.mat
+
+lta_convert --inlta T1_baseline_halfway.lta --outfsl A_halfwayto_B_fsl.mat
+lta_convert --inlta T1_follow_halfway.lta --outfsl B_halfwayto_A_fsl.mat
+
+# Converto la halfway_T1.mgz in formato .nii.gz
+
+mri_convert -it mgz -ot nii halfway_T1.mgz halfway_T1.nii.gz
+
+# Convertire le matrici di trasformazione delle immagini nello spazio halfway da FSL a RAS (ANTs)
+# usare halfway.mgz (conveertito .nii.gz) come -ref
+c3d_affine_tool -ref halfway_T1.nii.gz -src T1_baseline_reo.nii.gz A_halfwayto_B_fsl.mat -fsl2ras -oitk A_halfwayto_B_ANTs.mat
+c3d_affine_tool -ref halfway_T1.nii.gz -src T1_follow_reo.nii.gz B_halfwayto_A_fsl.mat -fsl2ras -oitk B_halfwayto_A_ANTs.mat
+
+# SyN Registration con ANTS (VEDERE CON MARCO)
+fixed_T1=T1_brain_baseline_reo.nii.gz
+moved_T1=T1_brain_follow_reo.nii.gz
+fixed_FLAIR=FLAIR_brain_baseline_reo.nii.gz
+moved_FLAIR=FLAIR_brain_follow_reo.nii.gz
+
+antsRegistration -d 3 --float 0 -o [matrice_T1,image_reg.nii.gz,image_inv_reg.nii.gz] -n Linear -w [0.005,0.995] -u 0 -r B_halfwayto_A_ANTs.mat -q A_halfwayto_B_ANTs.mat -t Syn[0.1,3,0] -m CC[$fixed_T1,$moved_T1,1,4] -m CC[$fixed_FLAIR,$moved_FLAIR,1,4] -c [100x70x50x20,1e-6,20] -f 8x4x2x1 -s 3x2x1x0vox 
+
+
+mkdir Jacobian
+
+# Applico la trasformata alla maschere di lesione 
+mri_convert -it mgz -ot nii T1_baseline_halfway.mgz T1_baseline_halfway.nii.gz
+
+antsApplyTransforms -d 3 --float 0 -i $lesion_mask_baseline -r T1_baseline_halfway.nii.gz -o ./Jacobian/lesion_prob_base_halfway_ANTs.nii.gz -n Linear -t A_halfwayto_B_ANTs.mat
+antsApplyTransforms -d 3 --float 0 -i $lesion_mask_follow -r T1_baseline_halfway.nii.gz -o ./Jacobian/lesion_prob_foll_halfway_ANTs.nii.gz -n Linear -t B_halfwayto_A_ANTs.mat
+
+output_jacobian=$output/registration_robust_template/FLAIR_T1
+
+cd Jacobian
+
+CreateJacobianDeterminantImage 3 $output_jacobian/matrice_T11Warp.nii.gz detJ.nii.gz 
+CreateJacobianDeterminantImage 3 $output_jacobian/matrice_T11InverseWarp.nii.gz detJ_inv.nii.gz
+
+fslmaths detJ.nii.gz -sub 1 nak_detJ_FLAIR.nii.gz
+fslmaths detJ_inv.nii.gz -sub 1 nak_detJ_inv_FLAIR.nii.gz
+
+
+#T2 e T1
+
+cd $output/registration_robust_template
+
+mkdir T2_T1
+
+cd $output/registration_robust_template/T2_T1
+
+# Rioriento le T2
+fslreorient2std $T2_baseline T2_baseline_reo.nii.gz
+
+fslreorient2std $T2_follow T2_follow_reo.nii.gz
+
+fslreorient2std $T2_brain_baseline T2_brain_baseline_reo.nii.gz
+
+fslreorient2std $T2_brain_follow T2_brain_follow_reo.nii.gz
+
+# Copio i file necessari dalla cartella FLAIR_T1
+cp $output/registration_robust_template/FLAIR_T1/T1_baseline_halfway.mgz ./
+
+cp $output/registration_robust_template/FLAIR_T1/T1_follow_halfway.mgz ./
+
+cp $output/registration_robust_template/FLAIR_T1/T1_brain_baseline_reo.mgz ./
+
+cp $output/registration_robust_template/FLAIR_T1/T1_brain_follow_reo.mgz ./
+
+# Converto le T2 in formato .mgz
+mri_convert -it nii -ot mgz T2_baseline_reo.nii.gz T2_baseline.mgz  
+
+mri_convert -it nii -ot mgz T2_follow_reo.nii.gz T2_follow.mgz
+
+# Coregistrazione spazio halfway delle immagini
+mri_robust_template --mov T2_baseline.mgz T2_follow.mgz --template halfway_T2.mgz --lta T2_baseline_halfway.lta T2_follow_halfway.lta --mapmov T2_baseline_halfway.mgz T2_follow_halfway.mgz --average 0 --iscale --satit --inittp 1 --fixtp --noit
+
+cp $output/registration_robust_template/FLAIR_T1/A_halfwayto_B_ANTs.mat ./
+cp $output/registration_robust_template/FLAIR_T1/B_halfwayto_A_ANTs.mat ./
+
+# Non linear registration
+fixed_T1=T1_brain_baseline_reo.nii.gz
+moved_T1=T1_brain_follow_reo.nii.gz
+fixed_T2=T2_brain_baseline_reo.nii.gz
+moved_T2=T2_brain_follow_reo.nii.gz
+
+antsRegistration -d 3 --float 0 -o [matrice_T1,image_reg.nii.gz,image_inv_reg.nii.gz] -n Linear -w [0.005,0.995] -u 0 -r B_halfwayto_A_ANTs.mat -q A_halfwayto_B_ANTs.mat -t Syn[0.1,3,0] -m CC[$fixed_T1,$moved_T1,1,4] -m CC[$fixed_T2,$moved_T2,1,4] -c [100x70x50x20,1e-6,20] -f 8x4x2x1 -s 3x2x1x0vox 
+
+mkdir Jacobian
+
+output_jacobian=$output/registration_robust_template/T2_T1
+
+cd Jacobian
+
+CreateJacobianDeterminantImage 3 $output_jacobian/matrice_T11Warp.nii.gz detJ.nii.gz 
+CreateJacobianDeterminantImage 3 $output_jacobian/matrice_T11InverseWarp.nii.gz detJ_inv.nii.gz
+
+fslmaths detJ.nii.gz -sub 1 nak_detJ_T2.nii.gz
+fslmaths detJ_inv.nii.gz -sub 1 nak_detJ_inv_T2.nii.gz
+
+cp $output/registration_robust_template/FLAIR_T1/Jacobian/lesion_prob_base_halfway_ANTs.nii.gz ./
+cp $output/registration_robust_template/FLAIR_T1/Jacobian/lesion_prob_foll_halfway_ANTs.nii.gz ./

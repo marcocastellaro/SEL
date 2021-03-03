@@ -1,6 +1,6 @@
+clear all 
+close all
 clc
-close all 
-clear all
 
 % Gestione deelle differenti piattaforme da cui si chiama il codice
 
@@ -59,7 +59,7 @@ for k=3:length(list)
                 exam=subj_data_list(d).name;
                 jobName=['JD' num2str(str2num( subjID)) '_' baseline '_' followup '.job'];
                  
-                ID_file=fopen(fullfile(jobdir, jobName),'w');
+                ID_file=fopen(fullfile(jobdir, jobName),'wt');
 
                 fprintf(ID_file,['#!/bin/bash\n'...
                     '#SBATCH --output ' jobName '.o%%j.txt\n'...
