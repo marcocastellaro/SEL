@@ -4,11 +4,11 @@ clc
 
 % Gestione deelle differenti piattaforme da cui si chiama il codice
 
-%base_directory = '/nfsd/biopetmri/BACKUP/Users/Marco/3T_Verona/SEL_candidates/';
+base_directory = '/nfsd/biopetmri/BACKUP/Users/Marco/3T_Verona/SEL_candidates/';
 % ALTERNATIVA PC LOCALE 
-base_directory = 'F:\Utente\TESI\';
+%base_directory = 'F:\Utente\TESI\';
 
-data_path=fullfile(base_directory,'dati');
+data_path=fullfile(base_directory,'data');
 output_path=fullfile(base_directory,'output');
 
 % elenco soggetti
