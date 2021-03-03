@@ -38,10 +38,11 @@ while (~isequal(dilate_jacobian_lesions_mask,prev_dilate_mask)) % condizione: ~i
     
     dilate_jacobian_lesions_mask = imdilate(jacobian_lesions_mask_EJ2,SE); 
     %i = i + 1;
+    dilate_jacobian_lesions_mask = and(jacobian_mask_EJ2,dilate_jacobian_lesions_mask);
+    dilate_jacobian_lesions_mask = and(lesions_prob_base_img,dilate_jacobian_lesions_mask);
 end
 
-dilate_jacobian_lesions_mask = and(jacobian_mask_EJ2,dilate_jacobian_lesions_mask);
-dilate_jacobian_lesions_mask = and(lesions_prob_base_img,dilate_jacobian_lesions_mask);
+
 
 % Definisco le componenti connesse della maschera ottenuta; questi sono i
 % candidati SEL iniziali
@@ -55,7 +56,7 @@ CC_dilate_mask = bwconncomp(dilate_jacobian_lesions_mask,18);
 % numero minimo di voxel che i candidati devono avere
 
 num_CC = CC_dilate_mask.NumObjects;
-num_minimo_voxel = 20;
+num_minimo_voxel = 30;
 
 % Creo la matrice che successivamente conterrà i candidati SEL finali 
 SEL = dilate_jacobian_lesions_mask;
