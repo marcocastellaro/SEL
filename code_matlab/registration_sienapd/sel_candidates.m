@@ -1,11 +1,11 @@
-function [SEL_base,CC_SEL_base,jacobian_mask_EJ1] = sel_candidates(detJ,lesions_prob_base_img,lesions_prob_foll_img,date1,date2)
+function [SEL_base,CC_SEL_base,jacobian_mask_EJ1] = sel_candidates(detJ,lesions_prob_base_img,lesions_prob_foll_img,y)
 
 % Questa section la posso anche cancellare dopo
 %% Calcolo in anni la differenza tra la data di acquisizione immagini baseline e follow-up
-date_baseline = datenum(date1); 
-date_follow = datenum(date2);
-diff = date_follow - date_baseline;
-y = diff/365.2425;
+%date_baseline = datenum(date1); 
+%date_follow = datenum(date2);
+%diff = date_follow - date_baseline;
+%y = diff/365.2425;
 
 %% Normalizzazione della logaritmo del determinante dello Jacobiano
 normalized_detJ = detJ./y;
