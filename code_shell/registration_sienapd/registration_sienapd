@@ -103,7 +103,7 @@ fslmaths detJ_inv.nii.gz -sub 1 nak_detJ_inv_T2.nii.gz
 
 #FLAIR e T1
 
-cd $output/registration_with_sienapd
+cd $output/registration_sienapd
 
 mkdir FLAIR_T1
 
