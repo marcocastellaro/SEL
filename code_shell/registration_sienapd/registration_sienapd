@@ -54,7 +54,7 @@ cd $output/registration_sienapd/T2_T1
 
 # SIENAPD con le T2 per ottenere le matrici di trasformazione nello spazio Halfway
 sienapd $T1_baseline $T1_follow -o ./ -d -r1 $mask1 -r2 $mask2
-
+ 
 
 fslreorient2std $T2_brain_baseline T2_brain_baseline.nii.gz
 fslreorient2std $T2_brain_follow T2_brain_follow.nii.gz
