@@ -133,7 +133,6 @@ CreateJacobianDeterminantImage 3 $output_jacobian/matrice_T11InverseWarp.nii.gz 
 fslmaths detJ.nii.gz -sub 1 nak_detJ_FLAIR.nii.gz
 fslmaths detJ_inv.nii.gz -sub 1 nak_detJ_inv_FLAIR.nii.gz
 
-
 #T2 e T1
 
 cd $output/registration_robust_template
@@ -156,9 +155,9 @@ cp $output/registration_robust_template/FLAIR_T1/T1_baseline_halfway.mgz ./
 
 cp $output/registration_robust_template/FLAIR_T1/T1_follow_halfway.mgz ./
 
-cp $output/registration_robust_template/FLAIR_T1/T1_brain_baseline_reo.mgz ./
+cp $output/registration_robust_template/FLAIR_T1/T1_brain_baseline_reo.nii.gz ./
 
-cp $output/registration_robust_template/FLAIR_T1/T1_brain_follow_reo.mgz ./
+cp $output/registration_robust_template/FLAIR_T1/T1_brain_follow_reo.nii.gz ./
 
 # Converto le T2 in formato .mgz
 mri_convert -it nii -ot mgz T2_baseline_reo.nii.gz T2_baseline.mgz  
