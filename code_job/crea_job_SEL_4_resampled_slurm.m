@@ -87,8 +87,8 @@ subjID_data_follow = list_data(d+1).name;
                     %'copyfile(''' strrep(fullfile(subj_path_output,subj_output_list(3).name,'registration_robust_template','FLAIR_T1','Jacobian','SEL.nii'),'\','/') ''',''' strrep(fullfile(subj_path_output,subj_output_list(3).name,'registration_resampled','Jacobian','SEL_robust_template.nii'),'\','/') ''')' ';' '\n'...
                     %'copyfile(''' strrep(fullfile(subj_path_output,subj_output_list(3).name,'registration_robust_template','FLAIR_T1','Jacobian','nak_detJ_FLAIR.nii'),'\','/') ''',''' strrep(fullfile(subj_path_output,subj_output_list(3).name,'registration_resampled','Jacobian','nak_detJ_robust_template.nii'),'\','/') ''')' ';' '
                     'num_CC_SEL = CC_SEL_' num2str(str2double(subjID_output)) '.NumObjects;' '\n' ...
-                    'save num_CC_SEL\n' ]);
-                
+                    'save(''' strrep(fullfile(subj_path_output,subj_output_list(3).name,'registration_resampled','Jacobian','num_CC_SEL'),'\','/') ''', ''num_CC_SEL'');' ]);
+                    
                 fclose(ID_file);
                 
                 jobName=['JD_' num2str(str2double(subjID_output)) '.job'];
