@@ -27,11 +27,11 @@ lesions_prob_foll_img = lesions_prob_foll_halfway.img > 0.5;
 baseline_date = '11-Apr-2015';
 followup_date = '29-Apr-2019';
 
-[SEL_1142_FLAIR, CC_1142_FLAIR] = sel_candidates(nak_detJ_FLAIR,lesions_prob_base_img,lesions_prob_foll_img,baseline_date,followup_date);
+[SEL_1142_FLAIR, CC_1142_FLAIR, jacobian_mask_EJ1] = sel_candidates(nak_detJ_FLAIR,lesions_prob_base_img,lesions_prob_foll_img,baseline_date,followup_date);
 
 nifti_1142 = lesions_prob_base_halfway;
-nifti_1142.img = SEL_1142_FLAIR;
-save_untouch_nii(nifti_1142,'F:\Utente\TESI\Output\001142\20150411_20190429\registration_sienapd\FLAIR_T1\Jacobian\SEL_1142_FLAIR.nii');
+nifti_1142.img = jacobian_mask_EJ1;
+save_untouch_nii(nifti_1142,'F:\Utente\TESI\Output\001142\20150411_20190429\registration_sienapd\FLAIR_T1\Jacobian\SEL_EJ1.nii');
 
 %% T2, T1
 

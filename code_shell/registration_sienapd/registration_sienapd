@@ -71,8 +71,8 @@ c3d_affine_tool -ref A.nii.gz -src A.nii.gz A_halfwayto_B.mat -fsl2ras -oitk A_h
 c3d_affine_tool -ref A.nii.gz -src B.nii.gz B_halfwayto_A.mat -fsl2ras -oitk B_halfwayto_A_ANTs.mat 
 
 # Applico le trasformazioni ottenute con c3d alle T1 e FLAIR di partenza per confrontarle con le halfway
-antsApplyTransforms -d 3 --float 0 -i $T2_baseline -r $T2_baseline -o T2_A_halfwayto_B_ANTs.nii.gz -n Linear -t A_halfwayto_B_ANTs.mat
-antsApplyTransforms -d 3 --float 0 -i $T2_follow -r $T2_baseline -o T2_B_halfwayto_A_ANTs.nii.gz -n Linear -t B_halfwayto_A_ANTs.mat
+antsApplyTransforms -d 3 --float 0 -i T2_baseline.nii.gz -r T2_baseline.nii.gz -o T2_A_halfwayto_B_ANTs.nii.gz -n Linear -t A_halfwayto_B_ANTs.mat
+antsApplyTransforms -d 3 --float 0 -i T2_follow.nii.gz -r T2_baseline.nii.gz -o T2_B_halfwayto_A_ANTs.nii.gz -n Linear -t B_halfwayto_A_ANTs.mat
 
 ######## ANTs Registration Syn #########
 fixed_T1=A_brain.nii.gz
@@ -150,3 +150,5 @@ fslmaths detJ_inv.nii.gz -sub 1 nak_detJ_inv_FLAIR.nii.gz
 
 # Visualizzazione delle immagini e generazione screenshot
 #fsleyes render  --scene lightbox -of /mnt/f/Utente/TESI/Registrazione_SEL/screenshot/prova.png --worldLoc -4.186868504221707 0.41046870983259964 25.751208020299174 --displaySpace /mnt/f/Utente/TESI/Registrazione_SEL/000128/test/Jacobian_output/image_detJ.nii.gz --zaxis 2 --sliceSpacing 3.706666665316249 --zrange 85.89996153667569 196.29991242013872 --ncols 10 --nrows 3 --bgColour 0.0 0.0 0.0 --fgColour 1.0 1.0 1.0 --cursorColour 0.0 1.0 0.0 --colourBarLocation top --colourBarLabelSide top-left --colourBarSize 100.0 --labelSize 12 --performance 3 --movieSync /mnt/f/Utente/TESI/Registrazione_SEL/000128/test/Jacobian_output/image_reg_T1.nii.gz --name "image_reg_T1" --overlayType volume --alpha 100.0 --brightness 49.74999999999999 --contrast 49.90029860765409 --cmap greyscale --negativeCmap greyscale --displayRange 0.0 3881511.4024883914 --clippingRange 0.0 3881511.4024883914 --modulateRange 0.0 3843080.5965231596 --gamma 0.0 --cmapResolution 256 --interpolation none --numSteps 100 --blendFactor 0.1 --smoothing 0 --resolution 100 --numInnerSteps 10 --clipMode intersection --volume 0 /mnt/f/Utente/TESI/Registrazione_SEL/000128/test/Jacobian_output/image_detJ.nii.gz --name "image_detJ" --overlayType volume --alpha 45.33333332402011 --brightness 56.54603548739306 --contrast 53.79234085129685 --cmap render3 --negativeCmap greyscale --displayRange 0.0 2.0 --clippingRange 0.0 2.387044315933172 --modulateRange 0.2012594945258178 2.3654028820578517 --gamma 0.0 --cmapResolution 256 --interpolation none --numSteps 100 --blendFactor 0.1 --smoothing 0 --resolution 100 --numInnerSteps 10 --clipMode intersection --volume 0
+
+
