@@ -42,14 +42,14 @@ mkdir registration_resampled
 
 cd $output/registration_resampled
 
-fslreorient2std $T1_baseline.nii.gz T1_baseline.nii.gz
-fslreorient2std $T1_follow.nii.gz T1_follow.nii.gz
-fslreorient2std $FLAIR_baseline.nii.gz FLAIR_baseline.nii.gz
-fslreorient2std $FLAIR_follow.nii.gz FLAIR_follow.nii.gz
-fslreorient2std $T1_brain_baseline.nii.gz T1_brain_baseline.nii.gz
-fslreorient2std $T1_brain_follow.nii.gz T1_brain_follow.nii.gz
-fslreorient2std $FLAIR_brain_baseline.nii.gz FLAIR_brain_baseline.nii.gz
-fslreorient2std $FLAIR_brain_follow.nii.gz FLAIR_brain_follow.nii.gz
+fslreorient2std $T1_baseline T1_baseline.nii.gz
+fslreorient2std $T1_follow T1_follow.nii.gz
+fslreorient2std $FLAIR_baseline FLAIR_baseline.nii.gz
+fslreorient2std $FLAIR_follow FLAIR_follow.nii.gz
+fslreorient2std $T1_brain_baseline T1_brain_baseline.nii.gz
+fslreorient2std $T1_brain_follow T1_brain_follow.nii.gz
+fslreorient2std $FLAIR_brain_baseline FLAIR_brain_baseline.nii.gz
+fslreorient2std $FLAIR_brain_follow FLAIR_brain_follow.nii.gz
 
 
 antsRegistration -d 3 --float -o [matrice,T1_follow_reg.nii.gz] -n Linear -u 0 -w [0.005,0.995] -r [T1_baseline.nii.gz,T1_follow.nii.gz,1] -t Rigid[0.1] -m MI[T1_baseline.nii.gz,T1_follow.nii.gz,1,32,Regular,0.25] -c [1000x500x250x100,1e-6,10] -f 8x4x2x1 -s 3x2x1x0vox 
