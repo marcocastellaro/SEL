@@ -70,7 +70,7 @@ moved_FLAIR=FLAIR_to_T1_brain_2019.nii.gz
 
 antsRegistration -d 3 --float 0 -o [matrice_2015_2019_,image_reg_2015_2019.nii.gz,image_inv_reg_2015_2019.nii.gz] -n Linear -w [0.005,0.995] -u 0 -r 2019_to_halfway_ANTs.mat -q 2015_to_halfway_ANTs.mat -t Syn[0.1,3,0] -m CC[$fixed_T1,$moved_T1,1,4] -m CC[$fixed_FLAIR,$moved_FLAIR,1,4] -c [100x70x50x20,1e-6,20] -f 8x4x2x1 -s 3x2x1x0vox 
 
-antsRegistration -d 3 --float 0 -o [matrice_II_to_I,nak_detJ_II_to_halfway.nii.gz] -n Linear -t Rigid[0.1] -c 0 -s 4 -f 4 -m CC[nak_detJ_I.nii.gz,nak_detJ_II.nii.gz]
+
 # Creo i determinante dello Jacobiano
 mkdir Jacobian
 
@@ -88,6 +88,8 @@ mv nak_detJ_I.nii.gz ./Jacobian
 mv nak_detJ_II.nii.gz ./Jacobian
 mv FLAIR_2014_halfway.mgz ./Jacobian
 mv FLAIR_2015_halfway.mgz ./Jacobian
+
+antsRegistration -d 3 --float 0 -o [matrice_II_to_I,nak_detJ_II_to_halfway.nii.gz] -n Linear -t Rigid[0.1] -c 0 -s 4 -f 4 -m CC[nak_detJ_I.nii.gz,nak_detJ_II.nii.gz]
 
 
 # Coregistro le maschere di lesioni nello spazio halfway
