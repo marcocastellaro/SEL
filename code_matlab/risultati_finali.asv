@@ -138,9 +138,9 @@ for t=3:1:length(list_output)
         k = k+1;  
 end
 
-result_sienapd = [sienapd_FLAIR ; volume_sienapd_FLAIR ; sienapd_T2 ; volume_sienapd_T2];
-result_robust = [robust_FLAIR ; volume_robust_FLAIR ; robust_T2 ; volume_robust_T2]; 
-result_resampled = [robust_FLAIR ; volume_robust_FLAIR ; resampled ; volume_resampled];
+result_sienapd = [sienapd_FLAIR ; sienapd_T2];
+result_robust = [robust_FLAIR ; robust_T2]; 
+result_resampled = [robust_FLAIR ; resampled];
 
 save(fullfile(output_summary,'result_sienapd'),'result_sienapd');
 save(fullfile(output_summary,'result_robust'),'result_robust');
