@@ -8,32 +8,46 @@ base_directory = '/nfsd/biopetmri/BACKUP/Users/Marco/3T_Verona/SEL_candidates';
 % ALTERNATIVA PC LOCALE 
 %base_directory = 'F:\Utente\TESI\';
 
+jobdir=fullfile(base_directory,'code','Jobs');
+if not(exist(jobdir,'dir'))
+    mkdir(jobdir)
+end
+filename_qsub=fullfile(base_directory,'code','Jobs',['Results_' datestr(now,30) '.txt']);
+ID_file_recap=fopen(filename_qsub,'w');
+
+jobdir=fullfile(base_directory,'code','Jobs','Results');
+if not(exist(jobdir,'dir'))
+    mkdir(jobdir)
+end
+fprintf(ID_file_recap,['cd ' strrep(jobdir,'\','/') ' \n']);
+
 output_path=fullfile(base_directory,'output');
 output_summury=fullfile(base_directory,'output_summary');
 
 % elenco soggetti
 list_output=dir(output_path);
 
-sienapd_FLAIR = zeros(1,length(list_output));
-sienapd_T2 = zeros(1,length(list_output));
-robust_FLAIR = zeros(1,length(list_output));
-robust_T2 = zeros(1,length(list_output));
-resampled = zeros(1,length(list_output));
+jobMatlabName=['M_SEL_JD_' num2str(str2double(subjID_output)) '.m'];
+                 
+ID_file=fopen(fullfile(jobdir, jobMatlabName),'wt');
 
-volume_sienapd_FLAIR = zeros(1,length(list_output));
-volume_sienapd_T2 = zeros(1,length(list_output));
-volume_robust_FLAIR = zeros(1,length(list_output));
-volume_robust_T2 = zeros(1,length(list_output));
-volume_resampled = zeros(1,length(list_output));
-
-k = 1;
-
-result_sienapd = zeros(4,length(list_output));
-result_robust = zeros(4,length(list_output));
-result_resampled = zeros(4,length(list_output));
-
-for t=3:1:length(list_output)
-    
+fprintf(ID_file,['sienapd_FLAIR = zeros(1,' length(list_output) ');\n' ...
+'sienapd_T2 = zeros(1,' length(list_output) ');\n' ...
+'robust_FLAIR = zeros(1,' length(list_output) ');\n' ...
+'robust_T2 = zeros(1,' length(list_output) ');\n' ...
+'resampled = zeros(1,' length(list_output) ');\n' ...
+'volume_sienapd_FLAIR = zeros(1,' length(list_output) ');\n' ...
+'volume_sienapd_T2 = zeros(1,' length(list_output) ');\n' ...
+'volume_robust_FLAIR = zeros(1,' length(list_output) ');\n' ...
+'volume_robust_T2 = zeros(1,' length(list_output) ');\n' ...
+'volume_resampled = zeros(1,' length(list_output) ');\n' ...
+'k = 1\n;' ...
+'result_sienapd = zeros(4,' length(list_output) ');\n' ...
+'result_robust = zeros(4,' length(list_output) ');\n' ...
+'result_resampled = zeros(4,' length(list_output) ');\n' ...
+'\n' ...
+'for t=3:1:' length(list_output) '\n' ...
+        '\n' ...
         subjID_output = list_output(t).name;
         subj_path_output=fullfile(output_path, subjID_output);
         subj_output_list=dir(subj_path_output);
@@ -87,4 +101,4 @@ result_resampled = [robust_FLAIR ; volume_robust_FLAIR ; resampled ; volume_resa
 
 save(fullfile(output_summary,'result_sienapd'),'result_sienapd');
 save(fullfile(output_summary,'result_robust'),'result_robust');
-save(fullfile(output_summary,'result_resampled'),'result_resampled');
+save(fullfile(output_summary,'result_resampled'),'result_resampled'); ]);
