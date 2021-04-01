@@ -19,4 +19,8 @@ mask_follow=/mnt/f/utente/tesi/dati/000004_20190304/ct/BrainExtractionMask.nii.g
 
 output=/mnt/f/utente/tesi/output/000004/20140428_20190304
 
-registration_sienapd $T1_baseline $T1_follow $FLAIR_brain_baseline $FLAIR_brain_follow $T2_baseline $T2_follow $T2_brain_baseline $T2_brain_follow $output -m1 $mask_baseline -m2 $mask_follow
+lesion_mask_baseline=/mnt/f/utente/tesi/dati/000004_20140428/baseline_2ch/baseline_2ch_prob_1.nii.gz
+lesion_mask_follow=/mnt/f/utente/tesi/dati/000004_20190304/baseline_2ch/baseline_2ch_prob_1.nii.gz
+
+
+registration_sienapd $T1_baseline $T1_follow $FLAIR_brain_baseline $FLAIR_brain_follow $T2_baseline $T2_follow $T2_brain_baseline $T2_brain_follow $output -m1 $mask_baseline -m2 $mask_follow -lm1 $lesion_mask_baseline -lm2 $lesion_mask_follow
