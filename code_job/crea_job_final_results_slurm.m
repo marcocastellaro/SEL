@@ -4,9 +4,9 @@ clc
 
 % Gestione deelle differenti piattaforme da cui si chiama il codice
 
-%base_directory = '/nfsd/biopetmri/BACKUP/Users/Marco/3T_Verona/SEL_candidates';
+base_directory = '/nfsd/biopetmri/BACKUP/Users/Marco/3T_Verona/SEL_candidates';
 % ALTERNATIVA PC LOCALE 
-base_directory = 'F:\Utente\TESI\';
+%base_directory = 'F:\Utente\TESI\';
 
 output_path=fullfile(base_directory,'output');
 output_summury=fullfile(base_directory,'output_summary');
@@ -115,7 +115,9 @@ fprintf(ID_file,['clear all\n' ...
     'save(fullfile(output_summury,''result_resampled''), ''result_resampled'');' ]);
 
 fclose(ID_file);
-                
+
+
+%%
                 jobName=['JD_finale.job'];
                 ID_file=fopen(fullfile(jobdir, jobName),'wt');
                 
