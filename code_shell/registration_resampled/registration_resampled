@@ -30,17 +30,33 @@ while [ _$1 != _ ] ; do
     elif [ $1 = -m2 ] ; then
         lesion_mask_follow=$2
         shift 2
+    elif [ $1 = -t2_b ] ; then
+        T2_baseline=$2
+        shift 2
+    elif [ $1 = -t2_f ] ; then
+        T2_follow=$2
+        shift 2
+    elif [ $1 = -t2_brain_b ] ; then
+        T2_brain_baseline=$2
+        shift 2
+    elif [ $1 = -t2_brain_f ] ; then
+        T2_brain_follow=$2
+        shift 2
     else 
     Usage
     fi
 done
 
 
+
 cd $output
 
-mkdir registration_resampled
+# FLAIR_T1
 
-cd $output/registration_resampled
+mkdir registration_resampled
+mkdir FLAIR_T1
+
+cd $output/registration_resampled/FLAIR_T1
 
 fslreorient2std $T1_baseline T1_baseline.nii.gz
 fslreorient2std $T1_follow T1_follow.nii.gz
@@ -108,11 +124,99 @@ antsRegistration -d 3 --float 0 -o [matrice_T1,image_reg.nii.gz,image_inv_reg.ni
 CreateJacobianDeterminantImage 3 matrice_T11Warp.nii.gz detJ.nii.gz 
 CreateJacobianDeterminantImage 3 matrice_T11InverseWarp.nii.gz detJ_inv.nii.gz
 
-fslmaths detJ.nii.gz -sub 1 nak_detJ.nii.gz
+fslmaths detJ.nii.gz -sub 1 nak_detJ_FLAIR.nii.gz
 
 mkdir Jacobian
 
-mv nak_detJ.nii.gz ./Jacobian
+mv nak_detJ_FLAIR.nii.gz ./Jacobian
+
+mri_convert -it mgz -ot nii T1_baseline_resampled_halfway.mgz T1_baseline_resampled_halfway.nii.gz
+
+antsApplyTransforms -d 3 --float 0 -i $lesion_mask_baseline -r T1_baseline_resampled_halfway.nii.gz -o lesion_prob_base_halfway_ANTs.nii.gz -n Linear -t A_halfwayto_B_ANTs.mat
+antsApplyTransforms -d 3 --float 0 -i $lesion_mask_follow -r T1_baseline_resampled_halfway.nii.gz -o lesion_prob_foll_halfway_ANTs.nii.gz -n Linear -t B_halfwayto_A_ANTs.mat
+
+mv lesion_prob_base_halfway_ANTs.nii.gz ./Jacobian
+mv lesion_prob_foll_halfway_ANTs.nii.gz ./Jacobian
+
+# T2_T1
+
+cd $output/registration_resampled
+
+mkdir T2_T1
+
+cd T2_T1
+
+fslreorient2std $T1_baseline T1_baseline.nii.gz
+fslreorient2std $T1_follow T1_follow.nii.gz
+fslreorient2std $T2_baseline T2_baseline.nii.gz
+fslreorient2std $T2_follow T2_follow.nii.gz
+fslreorient2std $T1_brain_baseline T1_brain_baseline.nii.gz
+fslreorient2std $T1_brain_follow T1_brain_follow.nii.gz
+fslreorient2std $T2_brain_baseline T2_brain_baseline.nii.gz
+fslreorient2std $T2_brain_follow T2_brain_follow.nii.gz
+
+
+antsRegistration -d 3 --float -o [matrice,T1_follow_reg.nii.gz] -n Linear -u 0 -w [0.005,0.995] -r [T1_baseline.nii.gz,T1_follow.nii.gz,1] -t Rigid[0.1] -m MI[T1_baseline.nii.gz,T1_follow.nii.gz,1,32,Regular,0.25] -c [1000x500x250x100,1e-6,10] -f 8x4x2x1 -s 3x2x1x0vox 
+
+antsApplyTransforms -d 3 --float 0 -i T2_follow.nii.gz -r T2_baseline.nii.gz -o T2_follow_reg.nii.gz -n Linear -t matrice0GenericAffine.mat
+
+# Ricampiono le immagini: Voxel anisotropi 1x1x3
+ResampleImage 3 T1_baseline.nii.gz T1_baseline_resampled.nii.gz 1x1x3
+ResampleImage 3 T1_follow_reg.nii.gz T1_follow_reg_resampled.nii.gz 1x1x3
+ResampleImage 3 T2_baseline.nii.gz T2_baseline_resampled.nii.gz 1x1x3
+ResampleImage 3 T2_follow_reg.nii.gz T2_follow_reg_resampled.nii.gz 1x1x3
+
+
+# Porto nello spazio halfway le T1 ricampionate
+mri_convert -it nii -ot mgz T1_baseline_resampled.nii.gz T1_baseline_resampled.mgz
+
+mri_convert -it nii -ot mgz T1_follow_reg_resampled.nii.gz T1_follow_reg_resampled.mgz
+
+mri_convert -it nii -ot mgz T2_baseline_resampled.nii.gz T2_baseline_resampled.mgz  
+
+mri_convert -it nii -ot mgz T2_follow_reg_resampled.nii.gz T2_follow_reg_resampled.mgz
+
+# Coregistrazione spazio halfway delle immagini
+mri_robust_template --mov T1_baseline_resampled.mgz T1_follow_reg_resampled.mgz --template halfway_T1.mgz --lta T1_baseline_resampled_halfway.lta T1_follow_resampled_halfway.lta --mapmov T1_baseline_resampled_halfway.mgz T1_follow_resampled_halfway.mgz --average 0 --iscale --satit --inittp 1 --fixtp --noit
+mri_robust_template --mov T2_baseline_resampled.mgz T2_follow_reg_resampled.mgz --template halfway_T2.mgz --lta T2_baseline_resampled_halfway.lta T2_follow_resampled_halfway.lta --mapmov T2_baseline_resampled_halfway.mgz T2_follow_resampled_halfway.mgz --average 0 --iscale --satit --inittp 1 --fixtp --noit
+
+# Converto i file.lta in file_fsl.mat
+lta_convert --inlta T1_baseline_resampled_halfway.lta --outfsl A_halfwayto_B_fsl.mat
+lta_convert --inlta T1_follow_resampled_halfway.lta --outfsl B_halfwayto_A_fsl.mat
+
+# Converto la halfway_T1.mgz in formato .nii.gz
+mri_convert -it mgz -ot nii halfway_T1.mgz halfway_T1.nii.gz
+
+# Convertire le matrici di trasformazione delle immagini nello spazio halfway da FSL a RAS (ANTs)
+# usare halfway.mgz (conveertito .nii.gz) come -ref
+c3d_affine_tool -ref halfway_T1.nii.gz -src T1_baseline_resampled.nii.gz A_halfwayto_B_fsl.mat -fsl2ras -oitk A_halfwayto_B_ANTs.mat
+c3d_affine_tool -ref halfway_T1.nii.gz -src T1_follow_reg_resampled.nii.gz B_halfwayto_A_fsl.mat -fsl2ras -oitk B_halfwayto_A_ANTs.mat
+
+# Coregistro le brain follow alla baseline
+antsApplyTransforms -d 3 --float 0 -i T2_brain_follow.nii.gz -r T2_baseline.nii.gz -o T2_brain_follow_reg.nii.gz -n Linear -t matrice0GenericAffine.mat
+antsApplyTransforms -d 3 --float 0 -i T1_brain_follow.nii.gz -r T1_baseline.nii.gz -o T1_brain_follow_reg.nii.gz -n Linear -t matrice0GenericAffine.mat
+
+# ricampiono le brain
+ResampleImage 3 T1_brain_baseline.nii.gz T1_brain_baseline_resampled.nii.gz 1x1x3
+ResampleImage 3 T1_brain_follow_reg.nii.gz T1_brain_follow_resampled.nii.gz 1x1x3
+ResampleImage 3 T2_brain_baseline.nii.gz T2_brain_baseline_resampled.nii.gz 1x1x3
+ResampleImage 3 T2_brain_follow_reg.nii.gz T2_brain_follow_resampled.nii.gz 1x1x3
+
+fixed_T1=T1_brain_baseline_resampled.nii.gz
+moved_T1=T1_brain_follow_resampled.nii.gz
+fixed_T2=T2_brain_baseline_resampled.nii.gz
+moved_T2=T2_brain_follow_resampled.nii.gz
+
+antsRegistration -d 3 --float 0 -o [matrice_T1,image_reg.nii.gz,image_inv_reg.nii.gz] -n Linear -w [0.005,0.995] -u 0 -r B_halfwayto_A_ANTs.mat -q A_halfwayto_B_ANTs.mat -t Syn[0.1,3,0] -m CC[$fixed_T1,$moved_T1,1,4] -m CC[$fixed_T2,$moved_T2,1,4] -c [100x70x50x20,1e-6,20] -f 8x4x2x1 -s 3x2x1x0vox 
+
+CreateJacobianDeterminantImage 3 matrice_T11Warp.nii.gz detJ.nii.gz 
+CreateJacobianDeterminantImage 3 matrice_T11InverseWarp.nii.gz detJ_inv.nii.gz
+
+fslmaths detJ.nii.gz -sub 1 nak_detJ_T2.nii.gz
+
+mkdir Jacobian
+
+mv nak_detJ_T2.nii.gz ./Jacobian
 
 mri_convert -it mgz -ot nii T1_baseline_resampled_halfway.mgz T1_baseline_resampled_halfway.nii.gz
 
