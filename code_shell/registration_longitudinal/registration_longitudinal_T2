@@ -1,0 +1,191 @@
+#!/bin/sh
+
+export LC_ALL=C
+
+Usage() {
+    cat <<EOF
+
+Usage: registration_robust_template <input_image> <output> [options]
+
+EOF
+    exit 1
+}
+
+T1_1=$1
+T1_2=$2
+T1_3=$3
+T1_4=$4
+T2_1=$5
+T2_2=$6
+T2_3=$7
+T2_4=$8
+output=$9
+
+shift 9
+
+while [ _$1 != _ ] ; do
+   
+    if [ $1 = -t1_brain_1 ] ; then
+        T1_brain_1=$2
+        shift 2
+    elif [ $1 = -t1_brain_2 ] ; then
+        T1_brain_2=$2
+        shift 2
+    elif [ $1 = -t1_brain_3 ] ; then
+        T1_brain_3=$2
+        shift 2
+    elif [ $1 = -t1_brain_4 ] ; then
+        T1_brain_4=$2
+        shift 2
+    elif [ $1 = -t2_brain_1 ] ; then
+        T2_brain_1=$2
+        shift 2
+    elif [ $1 = -t2_brain_2 ] ; then
+        T2_brain_2=$2
+        shift 2
+    elif [ $1 = -t2_brain_3 ] ; then
+        T2_brain_3=$2
+        shift 2
+    elif [ $1 = -t2_brain_4 ] ; then
+        T2_brain_4=$2
+        shift 2 
+    elif [ $1 = -lesion_1 ] ; then
+        lesion_mask_1=$2
+        shift 2
+    elif [ $1 = -lesion_2 ] ; then
+        lesion_mask_2=$2
+        shift 2
+    elif [ $1 = -lesion_3 ] ; then
+        lesion_mask_3=$2
+        shift 2
+    elif [ $1 = -lesion_4 ] ; then
+        lesion_mask_4=$2
+        shift 2   
+
+         
+    else 
+    Usage
+    fi
+
+done
+
+cd $output
+
+mkdir registration_longitudinal
+
+cd registration_longitudinal
+
+mkdir T2_T1
+
+cd FLAIR_T1
+
+# Rioriento tutte le immagini necessarie alla registrazione
+fslreorient2std $T1_1 T1_1.nii.gz
+fslreorient2std $T1_2 T1_2.nii.gz
+fslreorient2std $T1_3 T1_3.nii.gz
+fslreorient2std $T1_4 T1_4.nii.gz
+fslreorient2std $T1_brain_1 T1_brain_1.nii.gz
+fslreorient2std $T1_brain_2 T1_brain_2.nii.gz
+fslreorient2std $T1_brain_3 T1_brain_3.nii.gz
+fslreorient2std $T1_brain_4 T1_brain_4.nii.gz
+
+fslreorient2std $T2_1 T2_1.nii.gz
+fslreorient2std $T2_2 T2_2.nii.gz
+fslreorient2std $T2_3 T2_3.nii.gz
+fslreorient2std $T_4 T2_4.nii.gz
+fslreorient2std $T2_brain_1 T2_brain_1.nii.gz
+fslreorient2std $T2_brain_2 T2_brain_2.nii.gz
+fslreorient2std $T2_brain_3 T2_brain_3.nii.gz
+fslreorient2std $T2_brain_4 T2_brain_4.nii.gz
+
+
+# Converto le immagini nel formato mgz
+mri_convert -it nii -ot mgz T1_1.nii.gz T1_1.mgz
+mri_convert -it nii -ot mgz T1_2.nii.gz T1_2.mgz
+mri_convert -it nii -ot mgz T1_3.nii.gz T1_3.mgz
+mri_convert -it nii -ot mgz T1_4.nii.gz T1_4.mgz
+
+mri_convert -it nii -ot mgz T2_1.nii.gz FLAIR_1.mgz
+mri_convert -it nii -ot mgz T2_2.nii.gz FLAIR_2.mgz
+mri_convert -it nii -ot mgz T2_3.nii.gz FLAIR_3.mgz
+mri_convert -it nii -ot mgz T2_4.nii.gz FLAIR_4.mgz
+
+
+# Coregistrazione spazio halfway delle immagini
+mri_robust_template --mov T1_1.mgz T1_2.mgz T1_3.mgz T1_4.mgz --template halfway_T1.mgz --lta T1_1_halfway.lta T1_2_halfway.lta T1_3_halfway.lta T1_4_halfway.lta --mapmov T1_1_halfway.mgz T1_2_halfway.mgz T1_3_halfway.mgz T1_4_halfway.mgz --average 0 --iscale --satit --inittp 1 --fixtp --noit
+mri_robust_template --mov T2_1.mgz T2_2.mgz T2_3.mgz T2_4.mgz --template halfway_T2.mgz --lta T2_1_halfway.lta T2_2_halfway.lta T2_3_halfway.lta T2_4_halfway.lta --mapmov T2_1_halfway.mgz T2_2_halfway.mgz T2_3_halfway.mgz T2_4_halfway.mgz --average 0 --iscale --satit --inittp 1 --fixtp --noit
+
+# Converto i file.lta in file_fsl.mat
+lta_convert --inlta T1_1_halfway.lta --outfsl T1_1_halfway_fsl.mat
+lta_convert --inlta T1_2_halfway.lta --outfsl T1_2_halfway_fsl.mat
+lta_convert --inlta T1_3_halfway.lta --outfsl T1_3_halfway_fsl.mat
+lta_convert --inlta T1_4_halfway.lta --outfsl T1_4_halfway_fsl.mat
+
+# Converto la halfway_T1.mgz in formato .nii.gz
+
+mri_convert -it mgz -ot nii halfway_T1.mgz halfway_T1.nii.gz
+
+# Convertire le matrici di trasformazione delle immagini nello spazio halfway da FSL a RAS (ANTs)
+# usare halfway.mgz (conveertito .nii.gz) come -ref
+c3d_affine_tool -ref halfway_T1.nii.gz -src T1_1.nii.gz T1_1_halfway_fsl.mat -fsl2ras -oitk T1_1_halfway_ANTs.mat
+c3d_affine_tool -ref halfway_T1.nii.gz -src T1_2.nii.gz T1_2_halfway_fsl.mat -fsl2ras -oitk T1_2_halfway_ANTs.mat
+c3d_affine_tool -ref halfway_T1.nii.gz -src T1_3.nii.gz T1_3_halfway_fsl.mat -fsl2ras -oitk T1_3_halfway_ANTs.mat
+c3d_affine_tool -ref halfway_T1.nii.gz -src T1_4.nii.gz T1_4_halfway_fsl.mat -fsl2ras -oitk T1_4_halfway_ANTs.mat
+
+# Prima registrazione non lineare I - II 
+fixed_T1=T1_brain_1.nii.gz
+moved_T1=T1_brain_2.nii.gz
+fixed_T2=T2_brain_1.nii.gz
+moved_T2=T2_brain_2.nii.gz
+
+antsRegistration -d 3 --float 0 -o [matrice_I_II_,image_reg_I_II.nii.gz,image_inv_reg_I_II.nii.gz] -n Linear -w [0.005,0.995] -u 0 -r T1_2_halfway_ANTs.mat -q T1_1_halfway_ANTs.mat -t Syn[0.1,3,0] -m CC[$fixed_T1,$moved_T1,1,4] -m CC[$fixed_T2,$moved_T2,1,4] -c [100x70x50x20,1e-6,20] -f 8x4x2x1 -s 3x2x1x0vox 
+
+# Seconda registrazione non lineare II - III
+fixed_T1=T1_brain_2.nii.gz
+moved_T1=T1_brain_3.nii.gz
+fixed_T2=T2_brain_2.nii.gz
+moved_T2=T2_brain_3.nii.gz
+
+antsRegistration -d 3 --float 0 -o [matrice_II_III_,image_reg_II_III.nii.gz,image_inv_reg_II_III.nii.gz] -n Linear -w [0.005,0.995] -u 0 -r T1_3_halfway_ANTs.mat -q T1_2_halfway_ANTs.mat -t Syn[0.1,3,0] -m CC[$fixed_T1,$moved_T1,1,4] -m CC[$fixed_T2,$moved_T2,1,4] -c [100x70x50x20,1e-6,20] -f 8x4x2x1 -s 3x2x1x0vox 
+
+# terza registrazione non lineare III - iV
+
+fixed_T1=T1_brain_3.nii.gz
+moved_T1=T1_brain_4.nii.gz
+fixed_T2=T2_brain_3.nii.gz
+moved_T2=T2_brain_4.nii.gz
+
+antsRegistration -d 3 --float 0 -o [matrice_III_IV_,image_reg_III_IV.nii.gz,image_inv_reg_III_IV.nii.gz] -n Linear -w [0.005,0.995] -u 0 -r T1_4_halfway_ANTs.mat -q T1_3_halfway_ANTs.mat -t Syn[0.1,3,0] -m CC[$fixed_T1,$moved_T1,1,4] -m CC[$fixed_T2,$moved_T2,1,4] -c [100x70x50x20,1e-6,20] -f 8x4x2x1 -s 3x2x1x0vox 
+
+
+# Creo i determinante dello Jacobiano
+mkdir Jacobian
+
+CreateJacobianDeterminantImage 3 matrice_I_II_1Warp.nii.gz detJ_1.nii.gz 
+CreateJacobianDeterminantImage 3 matrice_II_III_1Warp.nii.gz detJ_2.nii.gz 
+CreateJacobianDeterminantImage 3 matrice_III_IV_1Warp.nii.gz detJ_3.nii.gz 
+
+fslmaths detJ_1.nii.gz -sub 1 nak_detJ_1.nii.gz
+fslmaths detJ_2.nii.gz -sub 1 nak_detJ_2.nii.gz
+fslmaths detJ_3.nii.gz -sub 1 nak_detJ_3.nii.gz
+
+antsRegistration -d 3 --float 0 -o [matrice_II_to_I,nak_detJ_2_to_1.nii.gz] -n Linear -t Rigid[0.1] -c 0 -s 4 -f 4 -m CC[nak_detJ_1.nii.gz,nak_detJ_2.nii.gz]
+antsRegistration -d 3 --float 0 -o [matrice_III_to_I,nak_detJ_3_to_1.nii.gz] -n Linear -t Rigid[0.1] -c 0 -s 4 -f 4 -m CC[nak_detJ_1.nii.gz,nak_detJ_3.nii.gz]
+
+mv nak_detJ_1.nii.gz ./Jacobian
+mv nak_detJ_2_to_1.nii.gz ./Jacobian
+mv nak_detJ_3_to_1.nii.gz ./Jacobian
+
+
+# Coregistro le maschere di lesioni nello spazio halfway
+antsApplyTransforms -d 3 --float 0 -i $lesion_mask_1 -r halfway_T1.nii.gz -o lesion_mask_1_halfway_ANTs.nii.gz -n Linear -t T1_1_halfway_ANTs.mat
+antsApplyTransforms -d 3 --float 0 -i $lesion_mask_2 -r halfway_T1.nii.gz -o lesion_mask_2_halfway_ANTs.nii.gz -n Linear -t T1_2_halfway_ANTs.mat
+antsApplyTransforms -d 3 --float 0 -i $lesion_mask_3 -r halfway_T1.nii.gz -o lesion_mask_3_halfway_ANTs.nii.gz -n Linear -t T1_3_halfway_ANTs.mat
+antsApplyTransforms -d 3 --float 0 -i $lesion_mask_4 -r halfway_T1.nii.gz -o lesion_mask_4_halfway_ANTs.nii.gz -n Linear -t T1_4_halfway_ANTs.mat
+
+
+mv lesion_mask_1_halfway_ANTs.nii.gz ./Jacobian
+mv lesion_mask_2_halfway_ANTs.nii.gz ./Jacobian
+mv lesion_mask_3_halfway_ANTs.nii.gz ./Jacobian
+mv lesion_mask_4_halfway_ANTs.nii.gz ./Jacobian
+

@@ -54,9 +54,12 @@ cd $output
 # FLAIR_T1
 
 mkdir registration_resampled
+
+cd $output/registration_resampled/
+
 mkdir FLAIR_T1
 
-cd $output/registration_resampled/FLAIR_T1
+cd FLAIR_T1
 
 fslreorient2std $T1_baseline T1_baseline.nii.gz
 fslreorient2std $T1_follow T1_follow.nii.gz
