@@ -1,8 +1,3 @@
-% Nel caso in cui ho già sogliato il determinante normalizzato con la
-% soglia EJ2 = 0.04 utilizzo questa linea di codice
-%function [SEL, CC_SEL] = dilation_sel_selection(jacobian_lesions_mask_EJ1,jacobian_mask_EJ2,lesions_prob_base_img)
-
-% Nel caso normale utilizzo questa linea di codice
 function [SEL, CC_SEL] = dilation_sel_selection(jacobian_lesions_mask_EJ1,normalized_detJ,lesions_prob_base_img)
 
 % Definisco come elemento per effettuare la dilatazione una sfera di
@@ -19,8 +14,6 @@ EJ2 = 0.04;
 
 % Prendo prima tutti i voxel che presentano un tasso di espansione maggiore
 % di EJ2
-
-% Nel caso normale utilizzo questa linea di codice
 jacobian_mask_EJ2 = normalized_detJ >= EJ2;
 
 % Selezioni solo quei voxel che hanno un tasso di espansioni maggiore di
@@ -58,8 +51,12 @@ CC_dilate_mask = bwconncomp(dilate_jacobian_lesions_mask,18);
 % Per concludere l'analisi elimino tutte quelle componenti che presentano
 % un numero di voxel inferiore a 10 (Elliot et al.), settando a zero tutti
 % i voxel delle componenti che verificano la condizione (1)
+% Ma visto che la risoluzione delle immagini di Elliot è 1x1x3 mentre noi
+% ci troviamo in condizioni di isotropia del voxel 1x1x1 aumento a 20 il
+% numero minimo di voxel che devo avere i candidati
+
 num_CC = CC_dilate_mask.NumObjects;
-num_minimo_voxel = 20;
+num_minimo_voxel = 30;
 
 % Creo la matrice che successivamente conterrà i candidati SEL finali 
 SEL = dilate_jacobian_lesions_mask;
