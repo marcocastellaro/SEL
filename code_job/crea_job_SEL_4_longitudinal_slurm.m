@@ -4,9 +4,9 @@ clc
 
 % Gestione deelle differenti piattaforme da cui si chiama il codice
 
-base_directory = '/nfsd/biopetmri/BACKUP/Users/Marco/3T_Verona/SEL_candidates';
+%base_directory = '/nfsd/biopetmri/BACKUP/Users/Marco/3T_Verona/SEL_candidates';
 % ALTERNATIVA PC LOCALE 
-%base_directory = 'F:\Utente\TESI\';
+base_directory = 'F:\Utente\TESI\';
 
 data_path=fullfile(base_directory,'data_longitudinal');
 output_path=fullfile(base_directory,'output_longitudinal');
@@ -29,7 +29,6 @@ end
 fprintf(ID_file_recap,['cd ' strrep(jobdir,'\','/') ' \n']);
 
 
-diff_1 = zeros(1,(length(list_output)-3));
 t = 2;
 
 for d=3:4:length(list_data)
@@ -48,16 +47,12 @@ subjID_data_4 = list_data(d+3).name;
     subj_data_list_1=dir(subj_path_data_1);
     subj_data_list_2=dir(subj_path_data_2);
     subj_data_list_3=dir(subj_path_data_3);
-    subj_data_list_2=dir(subj_path_data_4);
+    subj_data_list_4=dir(subj_path_data_4);
 
         I = subj_data_list_1(3).name;
         FormatIn = 'yyyymmdd';
         I_day = datenum(I,FormatIn);
-    
-        II = subj_data_list_2(3).name;
-        FormatIn = 'yyyymmdd';
-        II_day = datenum(II,FormatIn);
-        
+           
         II = subj_data_list_2(3).name;
         FormatIn = 'yyyymmdd';
         II_day = datenum(II,FormatIn);
@@ -266,4 +261,6 @@ end
 
   
   fclose(ID_file_recap)
-        
+  
+  
+ 

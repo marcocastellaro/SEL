@@ -69,15 +69,11 @@ while [ _$1 != _ ] ; do
 
 done
 
-cd $output
-
-mkdir registration_longitudinal
-
-cd registration_longitudinal
+cd $output/registration_longitudinal
 
 mkdir T2_T1
 
-cd FLAIR_T1
+cd T2_T1
 
 # Rioriento tutte le immagini necessarie alla registrazione
 fslreorient2std $T1_1 T1_1.nii.gz
@@ -92,7 +88,7 @@ fslreorient2std $T1_brain_4 T1_brain_4.nii.gz
 fslreorient2std $T2_1 T2_1.nii.gz
 fslreorient2std $T2_2 T2_2.nii.gz
 fslreorient2std $T2_3 T2_3.nii.gz
-fslreorient2std $T_4 T2_4.nii.gz
+fslreorient2std $T2_4 T2_4.nii.gz
 fslreorient2std $T2_brain_1 T2_brain_1.nii.gz
 fslreorient2std $T2_brain_2 T2_brain_2.nii.gz
 fslreorient2std $T2_brain_3 T2_brain_3.nii.gz
@@ -105,10 +101,10 @@ mri_convert -it nii -ot mgz T1_2.nii.gz T1_2.mgz
 mri_convert -it nii -ot mgz T1_3.nii.gz T1_3.mgz
 mri_convert -it nii -ot mgz T1_4.nii.gz T1_4.mgz
 
-mri_convert -it nii -ot mgz T2_1.nii.gz FLAIR_1.mgz
-mri_convert -it nii -ot mgz T2_2.nii.gz FLAIR_2.mgz
-mri_convert -it nii -ot mgz T2_3.nii.gz FLAIR_3.mgz
-mri_convert -it nii -ot mgz T2_4.nii.gz FLAIR_4.mgz
+mri_convert -it nii -ot mgz T2_1.nii.gz T2_1.mgz
+mri_convert -it nii -ot mgz T2_2.nii.gz T2_2.mgz
+mri_convert -it nii -ot mgz T2_3.nii.gz T2_3.mgz
+mri_convert -it nii -ot mgz T2_4.nii.gz T2_4.mgz
 
 
 # Coregistrazione spazio halfway delle immagini
