@@ -2,7 +2,8 @@ clear all
 close all
 clc
 
-base_directory = '/nfsd/biopetmri/BACKUP/Users/Marco/3T_Verona/SEL_candidates';
+%base_directory = '/nfsd/biopetmri/BACKUP/Users/Marco/3T_Verona/SEL_candidates';
+base_directory = 'F:\Utente\TESI';
 
 output_path=fullfile(base_directory,'output');
 
@@ -25,13 +26,12 @@ volume_robust_T2 = zeros(1,dim);
 volume_resampled_FLAIR = zeros(1,dim);
 volume_resampled_T2 = zeros(1,dim);
 
-k = 1;
-
 result_sienapd = zeros(4,dim);
 result_robust = zeros(4,dim);
 result_resampled_FLAIR = zeros(4,dim);
 result_resampled_T2 = zeros(4,dim);
 
+k = 1;
 
 for t=3:1:length(list_output)
 
@@ -189,129 +189,139 @@ end
 image = char('FLAIR','T2-w');
 figure
 boxplot([result_robust(1,:)' result_robust(3,:)'],image)
-title('FreeSurfer','FontSize',20,'Interpreter','latex')
-ylabel('numero $SEL$ identificate','FontSize',10,'Interpreter','latex')
+ylabel('numero SEL identificate','FontSize',18,'Interpreter','latex')
 
 %Siena
 figure
 boxplot([result_sienapd(1,:)' result_sienapd(3,:)'],image)
-title('SIENA','FontSize',20,'Interpreter','latex')
-ylabel('numero $SEL$ identificate','FontSize',10,'Interpreter','latex')
+ylabel('numero SEL identificate','FontSize',18,'Interpreter','latex')
 
 %Ricampionamento FLAIR
 nomi = char('1x1x1 mm','1x1x3 mm');
 figure
 boxplot([result_resampled_FLAIR(1,:)' result_resampled_FLAIR(3,:)'],nomi)
-title('Ricampionamento FLAIR','FontSize',20,'Interpreter','latex')
-ylabel('numero $SEL$ identificate','FontSize',10,'Interpreter','latex')
+ylabel('numero SEL identificate','FontSize',14,'Interpreter','latex')
 
 %Ricampionamento T2
 figure
 boxplot([result_resampled_T2(1,:)' result_resampled_T2(3,:)'],nomi)
-title('Ricampionamento T2-w','FontSize',20,'Interpreter','latex')
-ylabel('numero $SEL$ identificate','FontSize',10,'Interpreter','latex')
+ylabel('numero SEL identificate','FontSize',14,'Interpreter','latex')
 
 % tutti i resampled insieme
 nomi_2 = char('FLAIR 1x1x1 mm','T2-w 1x1x1 mm','FLAIR 1x1x3 mm','T2-w 1x1x3 mm');
 figure
 boxplot([result_resampled_FLAIR(1,:)' result_resampled_T2(1,:)' result_resampled_FLAIR(3,:)' result_resampled_T2(3,:)'],nomi_2)
-title('FLAIR vs T2-w: spazio originale e ricampionato','FontSize',20,'Interpreter','latex')
-ylabel('numero $SEL$ identificate','FontSize',10,'Interpreter','latex')
+ylabel('numero SEL identificate','FontSize',14,'Interpreter','latex')
 
 %% RISULTATI FINALI: Scatter plot
 figure
-scatter(result_robust(1,:)', result_robust(3,:)')
-xlabel('$FLAIR$','FontSize',10,'Interpreter','latex')
-ylabel('$T2-w$','FontSize',10,'Interpreter','latex')
-title('numero SEL identificate: FreeSurfer','FontSize',20,'Interpreter','latex')
-legend({'$numero$ $SEL$ $per$ $ogni soggetto$'},'Interpreter','latex','FontSize',8,'Location','NorthEast');
+scatter(result_robust(1,:)', result_robust(3,:)','b')
+xlabel('FLAIR','FontSize',14,'Interpreter','latex')
+ylabel('T2-w','FontSize',14,'Interpreter','latex')
+legend('soggetto','FontSize',10,'Location','SouthEast','Interpreter','latex');
+xlim([0 15])
+ylim([0 15])
 grid on
 
 figure
 scatter(result_sienapd(1,:)', result_sienapd(3,:)')
-xlabel('$FLAIR$','FontSize',10,'Interpreter','latex')
-ylabel('$T2-w$','FontSize',10,'Interpreter','latex')
+xlabel('FLAIR','FontSize',14,'Interpreter','latex')
+ylabel('T2-w','FontSize',14,'Interpreter','latex')
 title('numero SEL identificate: SIENA','FontSize',20,'Interpreter','latex')
-legend({'$numero$ $SEL$ $per$ $ogni soggetto$'},'Interpreter','latex','FontSize',8,'Location','NorthEast');
+legend('soggetto','Interpreter','latex','FontSize',10,'Location','SouthEast');
+xlim([0 14])
+ylim([0 14])
 grid on
 
 figure
 scatter(result_resampled_FLAIR(1,:)', result_resampled_FLAIR(3,:)')
-xlabel('$1x1x1 mmm$','FontSize',10,'Interpreter','latex')
-ylabel('$1x1x3 mmm$','FontSize',10,'Interpreter','latex')
-title('numero SEL identificate: Ricampionamento con FLAIR','FontSize',20,'Interpreter','latex')
-legend({'$numero$ $SEL$ $per$ $ogni soggetto$'},'Interpreter','latex','FontSize',8,'Location','NorthEast');
+xlabel('1x1x1 mmm','FontSize',14,'Interpreter','latex')
+ylabel('1x1x3 mmm','FontSize',14,'Interpreter','latex')
+legend('soggetto','Interpreter','latex','FontSize',10,'Location','SouthEast');
+xlim([0 9])
+ylim([0 9])
 grid on
 
 figure
 scatter(result_resampled_T2(1,:)', result_resampled_T2(3,:)')
-xlabel('$1x1x1 mmm$','FontSize',10,'Interpreter','latex')
-ylabel('$1x1x3 mmm$','FontSize',10,'Interpreter','latex')
-title('numero SEL identificate: Ricampionamento T2-w','FontSize',20,'Interpreter','latex')
-legend({'$numero$ $SEL$ $per$ $ogni soggetto$'},'Interpreter','latex','FontSize',8,'Location','NorthEast');
+xlabel('1x1x1 mmm','FontSize',14,'Interpreter','latex')
+ylabel('1x1x3 mmm','FontSize',14,'Interpreter','latex')
+legend('soggetto','Interpreter','latex','FontSize',10,'Location','SouthEast');
+xlim([0 14])
+ylim([0 14])
 grid on
 
 
 %% RISULTATI FINALI: Istogramma a barre per determinare il numero di soggetti che presentano SEL
-subj_with_SEL_sienapd_FLAIR = find(~sienapd_FLAIR);
+subj_with_SEL_sienapd_FLAIR = find(sienapd_FLAIR);
 dim1 = size(subj_with_SEL_sienapd_FLAIR);
 dim1 = dim1(2);
 
-subj_with_SEL_sienapd_T2 = find(~sienapd_T2);
+subj_with_SEL_sienapd_T2 = find(sienapd_T2);
 dim2 = size(subj_with_SEL_sienapd_T2);
 dim2 = dim2(2);
 
-subj_with_SEL_robust_FLAIR = find(~robust_FLAIR);
+subj_with_SEL_robust_FLAIR = find(robust_FLAIR);
 dim3 = size(subj_with_SEL_robust_FLAIR);
 dim3 = dim3(2);
 
-subj_with_SEL_robust_T2 = find(~robust_T2);
+subj_with_SEL_robust_T2 = find(robust_T2);
 dim4 = size(subj_with_SEL_robust_T2);
 dim4 = dim4(2);
 
-subj_with_SEL_resampled_FLAIR = find(~resampled_FLAIR);
+subj_with_SEL_resampled_FLAIR = find(resampled_FLAIR);
 dim5 = size(subj_with_SEL_resampled_FLAIR);
 dim5 = dim5(2);
 
-subj_with_SEL_resampled_T2 = find(~resampled_T2);
+subj_with_SEL_resampled_T2 = find(resampled_T2);
 dim6 = size(subj_with_SEL_resampled_T2);
 dim6 = dim6(2);
 
 
-x = [1 2];
-vals1 = [dim1 dim3; dim2 dim4];
+x = [1];
+vals1 = [dim3; dim4];
 
 figure
 b = bar(x,vals1);
+xtips1 = b(1).XEndPoints;
+ytips1 = b(1).YEndPoints;
+labels1 = string(b(1).YData);
+text(xtips1,ytips1,labels1,'HorizontalAlignment','center','VerticalAlignment','bottom')
 xtips2 = b(2).XEndPoints;
 ytips2 = b(2).YEndPoints;
 labels2 = string(b(2).YData);
 text(xtips2,ytips2,labels2,'HorizontalAlignment','center','VerticalAlignment','bottom')
 grid on
-ylabel('$SEL$','FontSize',10,'Interpreter','latex')
-title('SIENA vs FreeSurfer','FontSize',20,'Interpreter','latex')
-legend({'$FLAIR$','$T2-w$'},'Location','northeast')
+ylabel('Soggetti','FontSize',14,'Interpreter','latex')
+legend({'FLAIR','T2-w'},'Location','northwest')
+ylim([0 43])
 ax = gca;
-ax.XTick = [1 2]; 
-ax.XTickLabels = {'$SIENA$','$FreeSurfer$','FontSize',10,'Interpreter','latex'};
-ax.XTickLabelRotation = 45;
+ax.XTick = [1]; 
+ax.XTickLabels = {'FreeSurfer','FontSize',10,'Interpreter','latex'};
+ax.XTickLabelRotation = 0;
 
-vals2 = [dim3 dim4; dim5 dim6];
+vals2 = [dim3 dim5; dim4 dim6];
 
 figure
 b = bar(x,vals2);
+xtips1 = b(1).XEndPoints;
+ytips1 = b(1).YEndPoints;
+labels1 = string(b(1).YData);
+text(xtips1,ytips1,labels1,'HorizontalAlignment','center','VerticalAlignment','bottom')
 xtips2 = b(2).XEndPoints;
 ytips2 = b(2).YEndPoints;
 labels2 = string(b(2).YData);
 text(xtips2,ytips2,labels2,'HorizontalAlignment','center','VerticalAlignment','bottom')
 grid on
-ylabel('$Soggetti$','FontSize',10,'Interpreter','latex')
-title('$Soggetti$ $con$ $SEL:$ $Originale$ $vs$ $Ricampionato$','FontSize',20,'Interpreter','latex')
-legend({'$1x1x1 mmm$','$1x1x3 mmm$'},'Location','northeast')
+ylabel('numero soggetti con SEL','FontSize',14,'Interpreter','latex')
+legend({'1x1x1 mm','1x1x3 mm'},'Location','northwest')
+ylim([0 43])
 ax = gca;
 ax.XTick = [1 2]; 
-ax.XTickLabels = {'$FLAIR$','$T2-w$','FontSize',10,'Interpreter','latex'};
-ax.XTickLabelRotation = 45;
+ax.XTickLabels = {'FLAIR','T2-w','FontSize',12,'Interpreter','latex'};
+ax.XTickLabelRotation = 0;
+
+
 
 %save(fullfile(output_summury,'result_sienapd'), 'result_sienapd');
 %save(fullfile(output_summury,'result_robust'), 'result_robust');
