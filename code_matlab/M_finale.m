@@ -91,7 +91,7 @@ catch
     volume_SEL_resampled_FLAIR.volume = NaN;    
 end
 resampled_FLAIR(1,k) = CC_SEL_resampled_FLAIR.num_CC_SEL_FLAIR;
-volume_resampled_FLAIR(1,k) = volume_SEL_resampled_FLAIR.volume;
+volume_resampled_FLAIR(1,k) = volume_SEL_resampled_FLAIR.volume*3;
 
 try
 CC_SEL_resampled_T2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_resampled','T2_T1','Jacobian','num_CC_SEL_T2.mat'));
@@ -101,7 +101,7 @@ catch
     volume_SEL_resampled_T2.volume = NaN;    
 end
 resampled_T2(1,k) = CC_SEL_resampled_T2.num_CC_SEL_T2;
-volume_resampled_T2(1,k) = volume_SEL_resampled_T2.volume;
+volume_resampled_T2(1,k) = volume_SEL_resampled_T2.volume*3;
 
 k = k+1;
 end
@@ -110,6 +110,31 @@ result_sienapd = [sienapd_FLAIR ; volume_sienapd_FLAIR ; sienapd_T2 ; volume_sie
 result_robust = [robust_FLAIR ; volume_robust_FLAIR ; robust_T2 ; volume_robust_T2];
 result_resampled_FLAIR = [robust_FLAIR ; volume_robust_FLAIR ; resampled_FLAIR ; volume_resampled_FLAIR];
 result_resampled_T2 = [robust_T2 ; volume_robust_T2 ; resampled_T2 ; volume_resampled_T2];
+
+subj_with_SEL_sienapd_FLAIR = find(sienapd_FLAIR);
+dim1 = size(subj_with_SEL_sienapd_FLAIR);
+dim1 = dim1(2);
+
+subj_with_SEL_sienapd_T2 = find(sienapd_T2);
+dim2 = size(subj_with_SEL_sienapd_T2);
+dim2 = dim2(2);
+
+subj_with_SEL_robust_FLAIR = find(robust_FLAIR);
+dim3 = size(subj_with_SEL_robust_FLAIR);
+dim3 = dim3(2);
+
+subj_with_SEL_robust_T2 = find(robust_T2);
+dim4 = size(subj_with_SEL_robust_T2);
+dim4 = dim4(2);
+
+subj_with_SEL_resampled_FLAIR = find(resampled_FLAIR);
+dim5 = size(subj_with_SEL_resampled_FLAIR);
+dim5 = dim5(2);
+
+subj_with_SEL_resampled_T2 = find(resampled_T2);
+dim6 = size(subj_with_SEL_resampled_T2);
+dim6 = dim6(2);
+
 
 %% Analisi longitudinale
 
@@ -183,124 +208,314 @@ longitudinal_T2_volume(3,k) = volume_3.volume_3;
 k = k+1;
 end
 
-%% RISULTATI FINALI: boxplot
+%save(fullfile(output_summury,'result_sienapd'), 'result_sienapd');
+%save(fullfile(output_summury,'result_robust'), 'result_robust');
+%save(fullfile(output_summury,'result_resampled'), 'result_resampled');
 
-%FreeSurfer
-image = char('FLAIR','T2-w');
-figure
-boxplot([result_robust(1,:)' result_robust(3,:)'],image)
-ylabel('numero SEL identificate','FontSize',18,'Interpreter','latex')
 
+%% RISULTATI SIENA
 %Siena
+image = char('FLAIR','T2-w');
+
 figure
 boxplot([result_sienapd(1,:)' result_sienapd(3,:)'],image)
 ylabel('numero SEL identificate','FontSize',18,'Interpreter','latex')
-
-%Ricampionamento FLAIR
-nomi = char('1x1x1 mm','1x1x3 mm');
-figure
-boxplot([result_resampled_FLAIR(1,:)' result_resampled_FLAIR(3,:)'],nomi)
-ylabel('numero SEL identificate','FontSize',14,'Interpreter','latex')
-
-%Ricampionamento T2
-figure
-boxplot([result_resampled_T2(1,:)' result_resampled_T2(3,:)'],nomi)
-ylabel('numero SEL identificate','FontSize',14,'Interpreter','latex')
-
-% tutti i resampled insieme
-nomi_2 = char('FLAIR 1x1x1 mm','T2-w 1x1x1 mm','FLAIR 1x1x3 mm','T2-w 1x1x3 mm');
-figure
-boxplot([result_resampled_FLAIR(1,:)' result_resampled_T2(1,:)' result_resampled_FLAIR(3,:)' result_resampled_T2(3,:)'],nomi_2)
-ylabel('numero SEL identificate','FontSize',14,'Interpreter','latex')
-
-%% RISULTATI FINALI: Scatter plot
-figure
-scatter(result_robust(1,:)', result_robust(3,:)','b')
-xlabel('FLAIR','FontSize',14,'Interpreter','latex')
-ylabel('T2-w','FontSize',14,'Interpreter','latex')
-legend('soggetto','FontSize',10,'Location','SouthEast','Interpreter','latex');
-xlim([0 15])
 ylim([0 15])
-grid on
 
 figure
-scatter(result_sienapd(1,:)', result_sienapd(3,:)')
-xlabel('FLAIR','FontSize',14,'Interpreter','latex')
-ylabel('T2-w','FontSize',14,'Interpreter','latex')
-title('numero SEL identificate: SIENA','FontSize',20,'Interpreter','latex')
-legend('soggetto','Interpreter','latex','FontSize',10,'Location','SouthEast');
-xlim([0 14])
-ylim([0 14])
-grid on
+boxplot([result_sienapd(2,:)' result_sienapd(4,:)'],image)
+ylabel('volume SEL identificate','FontSize',18,'Interpreter','latex')
+
+% Correlazione di Pearson e p-value
+siena_correlazione = [result_sienapd(1,:)' result_sienapd(3,:)'];
+[R_siena,coeff_p_value_siena] = corr(siena_correlazione,'Type','Spearman');
+
+G = [result_sienapd(1,:)'];
+p_est = ((G'*G)^(-1))*G'*result_sienapd(3,:)';
+m = p_est(1);
+
+figure1 = figure;
+axes1 = axes('Parent',figure1);
+hold(axes1,'on');
+plot(result_sienapd(1,:)',m*result_sienapd(1,:),'DisplayName','retta di regressione','Color',[1 0 0]);
+scatter(result_sienapd(1,:)', result_sienapd(3,:)','b','DisplayName','soggetto')
+ylabel('T2-w','FontSize',16,'Interpreter','latex','Rotation',0);
+xlabel('FLAIR','FontSize',16,'Interpreter','latex');
+xlim(axes1,[0 15]);
+ylim(axes1,[0 15]);
+grid(axes1,'on');
+hold(axes1,'off');
+set(axes1,'FontSize',12,'TickLabelInterpreter','latex','XMinorTick','on',...
+    'YMinorTick','on');
+legend1 = legend(axes1,'show');
+set(legend1,'Location','southeast','Interpreter','latex','FontSize',12);
+
+
+
+x = [1];
+vals1 = [dim1; dim2];
+
+figure1 = figure;
+axes1 = axes('Parent',figure1);
+hold(axes1,'on');
+bar1 = bar(x,vals1,'LineWidth',1);
+set(bar1(2),'DisplayName','T2-w');
+set(bar1(1),'DisplayName','FLAIR');
+text('Parent',axes1,'VerticalAlignment','bottom',...
+    'HorizontalAlignment','center',...
+    'String','25',...
+    'Position',[0.857142857142857 25 0], ...
+    'Interpreter','latex');
+text('Parent',axes1,'VerticalAlignment','bottom',...
+    'HorizontalAlignment','center',...
+    'String','29',...
+    'Position',[1.14285714285714 29 0], ...
+    'Interpreter','latex');
+ylabel('Soggetti','FontSize',18,'Interpreter','latex');
+box(axes1,'on');
+grid(axes1,'on');
+hold(axes1,'off');
+set(axes1,'XTick',1,'XTickLabel',...
+    {'SIENA','FontSize',18,'Interpreter','latex'});
+legend1 = legend(axes1,'show');
+set(legend1,'Location','northwest','Interpreter','latex','FontSize',12);
+ylim([0 43])
+
+%% Risultati FreeSurfer
+image = char('FLAIR','T2-w');
 
 figure
-scatter(result_resampled_FLAIR(1,:)', result_resampled_FLAIR(3,:)')
-xlabel('1x1x1 mmm','FontSize',14,'Interpreter','latex')
-ylabel('1x1x3 mmm','FontSize',14,'Interpreter','latex')
-legend('soggetto','Interpreter','latex','FontSize',10,'Location','SouthEast');
-xlim([0 9])
-ylim([0 9])
-grid on
+boxplot([result_robust(1,:)' result_robust(3,:)'],image)
+ylabel('numero SEL identificate','FontSize',18,'Interpreter','latex')
+ylim([0 15])
 
 figure
-scatter(result_resampled_T2(1,:)', result_resampled_T2(3,:)')
-xlabel('1x1x1 mmm','FontSize',14,'Interpreter','latex')
-ylabel('1x1x3 mmm','FontSize',14,'Interpreter','latex')
-legend('soggetto','Interpreter','latex','FontSize',10,'Location','SouthEast');
-xlim([0 14])
-ylim([0 14])
-grid on
+boxplot([result_robust(2,:)' result_robust(4,:)'],image)
+ylabel('volume SEL identificate','FontSize',18,'Interpreter','latex')
+
+% Correlazione di Pearson e p-value
+robust_correlazione = [result_robust(1,:)' result_robust(3,:)'];
+[R_robust,coeff_p_value_robust] = corr(robust_correlazione,'Type','Spearman');
+
+G = [result_robust(1,:)'];
+p_est = ((G'*G)^(-1))*G'*result_robust(3,:)';
+m = p_est(1);
 
 
-%% RISULTATI FINALI: Istogramma a barre per determinare il numero di soggetti che presentano SEL
-subj_with_SEL_sienapd_FLAIR = find(sienapd_FLAIR);
-dim1 = size(subj_with_SEL_sienapd_FLAIR);
-dim1 = dim1(2);
+figure1 = figure;
+axes1 = axes('Parent',figure1);
+hold(axes1,'on');
+plot(result_robust(1,:)',m*result_robust(1,:),'DisplayName','retta di regressione','Color',[1 0 0]);
+scatter(result_robust(1,:)', result_robust(3,:)','b','DisplayName','soggetto')
+ylabel('T2-w','FontSize',16,'Interpreter','latex','Rotation',0);
+xlabel('FLAIR','FontSize',16,'Interpreter','latex');
+xlim(axes1,[0 15]);
+ylim(axes1,[0 15]);
+grid(axes1,'on');
+hold(axes1,'off');
+set(axes1,'FontSize',12,'TickLabelInterpreter','latex','XMinorTick','on',...
+    'YMinorTick','on');
+legend1 = legend(axes1,'show');
+set(legend1,'Location','southeast','Interpreter','latex','FontSize',12);
 
-subj_with_SEL_sienapd_T2 = find(sienapd_T2);
-dim2 = size(subj_with_SEL_sienapd_T2);
-dim2 = dim2(2);
-
-subj_with_SEL_robust_FLAIR = find(robust_FLAIR);
-dim3 = size(subj_with_SEL_robust_FLAIR);
-dim3 = dim3(2);
-
-subj_with_SEL_robust_T2 = find(robust_T2);
-dim4 = size(subj_with_SEL_robust_T2);
-dim4 = dim4(2);
-
-subj_with_SEL_resampled_FLAIR = find(resampled_FLAIR);
-dim5 = size(subj_with_SEL_resampled_FLAIR);
-dim5 = dim5(2);
-
-subj_with_SEL_resampled_T2 = find(resampled_T2);
-dim6 = size(subj_with_SEL_resampled_T2);
-dim6 = dim6(2);
 
 
 x = [1];
 vals1 = [dim3; dim4];
 
-figure
-b = bar(x,vals1);
-xtips1 = b(1).XEndPoints;
-ytips1 = b(1).YEndPoints;
-labels1 = string(b(1).YData);
-text(xtips1,ytips1,labels1,'HorizontalAlignment','center','VerticalAlignment','bottom')
-xtips2 = b(2).XEndPoints;
-ytips2 = b(2).YEndPoints;
-labels2 = string(b(2).YData);
-text(xtips2,ytips2,labels2,'HorizontalAlignment','center','VerticalAlignment','bottom')
-grid on
-ylabel('Soggetti','FontSize',14,'Interpreter','latex')
-legend({'FLAIR','T2-w'},'Location','northwest')
+figure1 = figure;
+axes1 = axes('Parent',figure1);
+hold(axes1,'on');
+bar1 = bar(x,vals1,'LineWidth',1);
+set(bar1(2),'DisplayName','T2-w');
+set(bar1(1),'DisplayName','FLAIR');
+text('Parent',axes1,'VerticalAlignment','bottom',...
+    'HorizontalAlignment','center',...
+    'String','27',...
+    'Position',[0.857142857142857 27 0], ...
+    'Interpreter','latex');
+text('Parent',axes1,'VerticalAlignment','bottom',...
+    'HorizontalAlignment','center',...
+    'String','31',...
+    'Position',[1.14285714285714 31 0], ...
+    'Interpreter','latex');
+ylabel('Soggetti','FontSize',18,'Interpreter','latex');
+box(axes1,'on');
+grid(axes1,'on');
+hold(axes1,'off');
+set(axes1,'XTick',1,'XTickLabel',...
+    {'FreeSurfer','FontSize',18,'Interpreter','latex'});
+legend1 = legend(axes1,'show');
+set(legend1,'Location','northwest','Interpreter','latex','FontSize',12);
 ylim([0 43])
-ax = gca;
-ax.XTick = [1]; 
-ax.XTickLabels = {'FreeSurfer','FontSize',10,'Interpreter','latex'};
-ax.XTickLabelRotation = 0;
 
-vals2 = [dim3 dim5; dim4 dim6];
+%% Resampled T2
+
+image = char('1x1x1 mm','1x1x3 mm');
+
+figure
+boxplot([result_resampled_T2(1,:)' result_resampled_T2(3,:)'],image)
+ylabel('numero SEL identificate','FontSize',18,'Interpreter','latex')
+ylim([0 15])
+
+figure
+boxplot([result_resampled_T2(2,:)' result_resampled_T2(4,:)'],image)
+ylabel('volume SEL identificate','FontSize',18,'Interpreter','latex')
+
+% Correlazione di Pearson e p-value
+resampled_T2_correlazione = [result_resampled_T2(1,:)' result_resampled_T2(3,:)'];
+[R_res_T2,coeff_p_value_res_T2] = corr(resampled_T2_correlazione,'Type','Spearman');
+
+G = result_resampled_T2(1,:)';
+p_est = ((G'*G)^(-1))*G'*result_resampled_T2(3,:)';
+m = p_est(1);
+
+figure1 = figure;
+axes1 = axes('Parent',figure1);
+hold(axes1,'on');
+plot(result_resampled_T2(1,:)',m*result_resampled_T2(1,:),'DisplayName','retta di regressione','Color',[1 0 0]);
+scatter(result_resampled_T2(1,:)', result_resampled_T2(3,:)','b','DisplayName','soggetto')
+ylabel('1x1x3 mm','FontSize',16,'Interpreter','latex','Rotation',90);
+xlabel('1x1x1 mm','FontSize',16,'Interpreter','latex');
+xlim(axes1,[0 15]);
+ylim(axes1,[0 15]);
+grid(axes1,'on');
+hold(axes1,'off');
+set(axes1,'FontSize',12,'TickLabelInterpreter','latex','XMinorTick','on',...
+    'YMinorTick','on');
+legend1 = legend(axes1,'show');
+set(legend1,'Location','northeast','Interpreter','latex','FontSize',12);
+
+
+
+x = [1];
+vals1 = [dim4; dim6];
+
+figure1 = figure;
+axes1 = axes('Parent',figure1);
+hold(axes1,'on');
+bar1 = bar(x,vals1,'LineWidth',1);
+set(bar1(2),'DisplayName','1x1x3 mm');
+set(bar1(1),'DisplayName','1x1x1 mm');
+text('Parent',axes1,'VerticalAlignment','bottom',...
+    'HorizontalAlignment','center',...
+    'String','31',...
+    'Position',[0.857142857142857 31 0], ...
+    'Interpreter','latex');
+text('Parent',axes1,'VerticalAlignment','bottom',...
+    'HorizontalAlignment','center',...
+    'String','27',...
+    'Position',[1.14285714285714 27 0], ...
+    'Interpreter','latex');
+ylabel('Soggetti','FontSize',18,'Interpreter','latex');
+box(axes1,'on');
+grid(axes1,'on');
+hold(axes1,'off');
+set(axes1,'XTick',1,'XTickLabel',...
+    {'T2-w','FontSize',18,'Interpreter','latex'});
+legend1 = legend(axes1,'show');
+set(legend1,'Location','northwest','Interpreter','latex','FontSize',12);
+ylim([0 43])
+
+%% Resampled FLAIR
+resampled_FLAIR_copia = resampled_FLAIR;
+resampled_FLAIR_copia(22:10:32) = [];
+volume_resampled_FLAIR_copia = volume_resampled_FLAIR;
+volume_resampled_FLAIR_copia(22:10:32) = [];
+robust_FLAIR_copia = robust_FLAIR;
+robust_FLAIR_copia(22:10:32) = [];
+volume_robust_FLAIR_copia = volume_robust_FLAIR;
+volume_robust_FLAIR_copia(22:10:32) = [];
+result_resampled_FLAIR_copia = [robust_FLAIR_copia ; volume_robust_FLAIR_copia ; resampled_FLAIR_copia ; volume_resampled_FLAIR_copia];
+ 
+
+image = char('1x1x1 mm','1x1x3 mm');
+figure
+boxplot([result_resampled_FLAIR_copia(1,:)' result_resampled_FLAIR_copia(3,:)'],image)
+ylabel('numero SEL identificate','FontSize',18,'Interpreter','latex')
+ylim([0 15])
+
+figure
+boxplot([result_resampled_FLAIR_copia(2,:)' result_resampled_FLAIR_copia(4,:)'],image)
+ylabel('volume SEL identificate','FontSize',18,'Interpreter','latex')
+
+% Correlazione di Pearson e p-value
+resampled_FLAIR_correlazione = [result_resampled_FLAIR_copia(1,:)' result_resampled_FLAIR_copia(3,:)'];
+[R_res_FLAIR,coeff_p_value_res_FLAIR] = corr(resampled_FLAIR_correlazione);
+
+G = result_resampled_FLAIR_copia(1,:)';
+p_est = ((G'*G)^(-1))*G'*result_resampled_FLAIR_copia(3,:)';
+m = p_est(1);
+
+figure1 = figure;
+axes1 = axes('Parent',figure1);
+hold(axes1,'on');
+plot(result_resampled_FLAIR_copia(1,:)',m*result_resampled_FLAIR_copia(1,:),'DisplayName','retta di regressione','Color',[1 0 0]);
+scatter(result_resampled_FLAIR_copia(1,:)', result_resampled_FLAIR_copia(3,:)','b','DisplayName','soggetto')
+ylabel('1x1x3 mm','FontSize',16,'Interpreter','latex','Rotation',90);
+xlabel('1x1x1 mm','FontSize',16,'Interpreter','latex');
+xlim(axes1,[0 15]);
+ylim(axes1,[0 15]);
+grid(axes1,'on');
+hold(axes1,'off');
+set(axes1,'FontSize',12,'TickLabelInterpreter','latex','XMinorTick','on',...
+    'YMinorTick','on');
+legend1 = legend(axes1,'show');
+set(legend1,'Location','northeast','Interpreter','latex','FontSize',12);
+
+
+subj_with_SEL_robust_FLAIR_copia = find(robust_FLAIR_copia);
+dim3_copia = size(subj_with_SEL_robust_FLAIR_copia);
+dim3_copia = dim3_copia(2);
+
+subj_with_SEL_resampled_FLAIR_copia = find(resampled_FLAIR_copia);
+dim5_copia = size(subj_with_SEL_resampled_FLAIR_copia);
+dim5_copia = dim5_copia(2);
+
+
+x = [1];
+vals1 = [dim3_copia; dim5_copia];
+
+figure1 = figure;
+axes1 = axes('Parent',figure1);
+hold(axes1,'on');
+bar1 = bar(x,vals1,'LineWidth',1);
+set(bar1(2),'DisplayName','1x1x3 mm');
+set(bar1(1),'DisplayName','1x1x1 mm');
+text('Parent',axes1,'VerticalAlignment','bottom',...
+    'HorizontalAlignment','center',...
+    'String','25',...
+    'Position',[0.857142857142857 25 0], ...
+    'Interpreter','latex');
+text('Parent',axes1,'VerticalAlignment','bottom',...
+    'HorizontalAlignment','center',...
+    'String','20',...
+    'Position',[1.14285714285714 20 0], ...
+    'Interpreter','latex');
+ylabel('Soggetti','FontSize',18,'Interpreter','latex');
+box(axes1,'on');
+grid(axes1,'on');
+hold(axes1,'off');
+set(axes1,'XTick',1,'XTickLabel',...
+    {'FLAIR','FontSize',18,'Interpreter','latex'});
+legend1 = legend(axes1,'show');
+set(legend1,'Location','northwest','Interpreter','latex','FontSize',12);
+ylim([0 41])
+
+%% Combinazione risultati
+
+nomi_2 = char('FLAIR 1x1x1 mm','T2-w 1x1x1 mm','FLAIR 1x1x3 mm','T2-w 1x1x3 mm');
+figure
+boxplot([result_resampled_FLAIR(1,:)' result_resampled_T2(1,:)' result_resampled_FLAIR(3,:)' result_resampled_T2(3,:)'],nomi_2)
+ylabel('numero SEL identificate','FontSize',18,'Interpreter','latex')
+ylim([0 15])
+
+figure
+boxplot([result_resampled_FLAIR(2,:)' result_resampled_T2(2,:)' result_resampled_FLAIR(4,:)' result_resampled_T2(4,:)'],nomi_2)
+ylabel('volume SEL identificate','FontSize',18,'Interpreter','latex')
+
+x = [1 2 3]
+vals2 = [dim1 dim3 dim5; dim2 dim4 dim6];
 
 figure
 b = bar(x,vals2);
@@ -313,16 +528,15 @@ ytips2 = b(2).YEndPoints;
 labels2 = string(b(2).YData);
 text(xtips2,ytips2,labels2,'HorizontalAlignment','center','VerticalAlignment','bottom')
 grid on
-ylabel('numero soggetti con SEL','FontSize',14,'Interpreter','latex')
-legend({'1x1x1 mm','1x1x3 mm'},'Location','northwest')
+ylabel('numero soggetti con SEL','FontSize',16,'Interpreter','latex')
+legend({'SIENA','FreeSurfer','1x1x3 mm'},'Location','northwest','interpreter','latex','FontSize',12)
 ylim([0 43])
 ax = gca;
 ax.XTick = [1 2]; 
-ax.XTickLabels = {'FLAIR','T2-w','FontSize',12,'Interpreter','latex'};
+ax.XTickLabels = {'FLAIR','T2-w','FontSize',16,'Interpreter','latex'};
 ax.XTickLabelRotation = 0;
 
+x = [1];
+vals1 = [dim3_copia; dim5_copia];
 
 
-%save(fullfile(output_summury,'result_sienapd'), 'result_sienapd');
-%save(fullfile(output_summury,'result_robust'), 'result_robust');
-%save(fullfile(output_summury,'result_resampled'), 'result_resampled');

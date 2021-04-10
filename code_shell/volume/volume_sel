@@ -1,0 +1,70 @@
+#!/bin/bash 
+
+export LC_ALL=C
+
+Usage() {
+    cat <<EOF
+
+Usage: registration_sienapd <input_image> <output> [options]
+
+-m1 <mask1>
+-m2 <mask2>
+
+EOF
+    exit 1
+}
+
+
+T1_baseline=$1
+T1_follow=$2
+lesion_mask_baseline=$3
+lesion_mask_follow=$4
+output=$5
+A_halfwayto_B_ANTs_SIENA=$6
+A_halfwayto_B_ANTs_ROBUST=$7
+SEL_1=$8
+SEL_2=$9
+
+shift 9
+
+while [ _$1 != _ ] ; do
+   
+    if [ $1 = -sel_3 ] ; then
+        SEL_3=$2
+        shift 2
+    elif [ $1 = -sel_4 ] ; then
+        SEL_4=$2
+        shift 2
+    else 
+    Usage
+    fi
+
+done
+
+cd $output
+
+mkdir volume
+
+cd volume
+
+fslreorient2std $T1_baseline T1_baseline.nii.gz
+fslreorient2std $T1_follow T1_follow.nii.gz
+fslreorient2std $lesion_mask_baseline lesion_mask_baseline.nii.gz
+fslreorient2std $lesion_mask_follow lesion_mask_follow.nii.gz
+
+antsRegistration -d 3 --float -o [matrice,T1_follow_reg.nii.gz] -n Linear -u 0 -w [0.005,0.995] -r [T1_baseline.nii.gz,T1_follow.nii.gz,1] -t Rigid[0.1] -m MI[T1_baseline.nii.gz,T1_follow.nii.gz,1,32,Regular,0.25] -c [1000x500x250x100,1e-6,10] -f 8x4x2x1 -s 3x2x1x0vox 
+
+antsApplyTransforms -d 3 --float 0 -i lesion_mask_follow.nii.gz -r T1_baseline.nii.gz -o lesion_mask_follow_reg.nii.gz -n Linear -t matrice0GenericAffine.mat
+
+# 1 : SIENA FLAIR
+# 2 : SIENA T2
+# 3 : ROBUST FLAIR
+# 4 : ROBUST T2
+
+antsApplyTransforms -d 3 --float 0 -i $SEL_1 -o SEL_to_baseline_1.nii.gz -r T1_baseline.nii.gz -n Linear -t [$A_halfwayto_B_ANTs_SIENA,1] 
+
+antsApplyTransforms -d 3 --float 0 -i $SEL_2 -o SEL_to_baseline_2.nii.gz -r T1_baseline.nii.gz -n Linear -t [$A_halfwayto_B_ANTs_SIENA,1] 
+
+antsApplyTransforms -d 3 --float 0 -i $SEL_3 -o SEL_to_baseline_3.nii.gz -r T1_baseline.nii.gz -n Linear -t [$A_halfwayto_B_ANTs_ROBUST,1] 
+
+antsApplyTransforms -d 3 --float 0 -i $SEL_4 -o SEL_to_baseline_4.nii.gz -r T1_baseline.nii.gz -n Linear -t [$A_halfwayto_B_ANTs_ROBUST,1] 
