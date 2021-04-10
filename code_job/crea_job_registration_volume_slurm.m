@@ -19,10 +19,10 @@ jobdir=fullfile(base_directory,'code','Jobs');
 if not(exist(jobdir,'dir'))
     mkdir(jobdir)
 end
-filename_qsub=fullfile(base_directory,'code','Jobs',['volume_sbatch_4_slurm_' datestr(now,30) '.txt']);
+filename_qsub=fullfile(base_directory,'code','Jobs',['registration_volume_sbatch_4_slurm_' datestr(now,30) '.txt']);
 ID_file_recap=fopen(filename_qsub,'w');
 
-jobdir=fullfile(base_directory,'code','Jobs','Exex_slurm_volume');
+jobdir=fullfile(base_directory,'code','Jobs','Exex_slurm_registration_volume');
 if not(exist(jobdir,'dir'))
     mkdir(jobdir)
 end
