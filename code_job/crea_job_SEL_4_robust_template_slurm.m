@@ -8,8 +8,8 @@ base_directory = '/nfsd/biopetmri/BACKUP/Users/Marco/3T_Verona/SEL_candidates';
 % ALTERNATIVA PC LOCALE 
 %base_directory = 'F:\Utente\TESI\';
 
-data_path=fullfile(base_directory,'data');
-output_path=fullfile(base_directory,'output');
+data_path=fullfile(base_directory,'new_data');
+output_path=fullfile(base_directory,'new_output');
 
 % elenco soggetti
 list_output=dir(output_path);

@@ -147,37 +147,37 @@ longitudinal_T2_SEL = zeros(3,dim);
 
 longitudinal_FLAIR_volume = zeros(3,dim);
 longitudinal_T2_volume = zeros(3,dim);
-
+k = 1;
 for t=3:1:length(list_output)
 
 subjID_output = list_output(t).name;
 subj_path_output= fullfile(output_path, subjID_output);
 subj_output_list=dir(subj_path_output);
 
-try
-CC_SEL_1 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','num_CC_SEL_1.mat'));
-volume_1 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','volume_1.mat'));
-CC_SEL_2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','num_CC_SEL_2.mat'));
-volume_2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','volume_2.mat'));
-CC_SEL_3 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','num_CC_SEL_3.mat'));
-volume_3 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','volume_3.mat'));
+%try
+%CC_SEL_1 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','num_CC_SEL_1.mat'));
+%volume_1 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','volume_1.mat'));
+%CC_SEL_2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','num_CC_SEL_2.mat'));
+%volume_2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','volume_2.mat'));
+%CC_SEL_3 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','num_CC_SEL_3.mat'));
+%volume_3 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','volume_3.mat'));
 
-catch
-    CC_SEL_1.num_CC_SEL_1 = NaN;
-    volume_1.volume_1 = NaN;
-    CC_SEL_2.num_CC_SEL_2 = NaN;
-    volume_2.volume_2 = NaN;
-    CC_SEL_3.num_CC_SEL_3 = NaN;
-    volume_3.volume_3 = NaN;
-end
+%catch
+ %   CC_SEL_1.num_CC_SEL_1 = NaN;
+  %  volume_1.volume_1 = NaN;
+   % CC_SEL_2.num_CC_SEL_2 = NaN;
+   % volume_2.volume_2 = NaN;
+   % CC_SEL_3.num_CC_SEL_3 = NaN;
+   % volume_3.volume_3 = NaN;
+%end
 
-longitudinal_FLAIR_SEL(1,k) = CC_SEL_1.num_CC_SEL_1;
-longitudinal_FLAIR_SEL(2,k) = CC_SEL_2.num_CC_SEL_2;
-longitudinal_FLAIR_SEL(3,k) = CC_SEL_3.num_CC_SEL_3;
+%longitudinal_FLAIR_SEL(1,k) = CC_SEL_1.num_CC_SEL_1;
+%longitudinal_FLAIR_SEL(2,k) = CC_SEL_2.num_CC_SEL_2;
+%longitudinal_FLAIR_SEL(3,k) = CC_SEL_3.num_CC_SEL_3;
 
-longitudinal_FLAIR_volume(1,k) = volume_1.volume_1;
-longitudinal_FLAIR_volume(2,k) = volume_2.volume_2;
-longitudinal_FLAIR_volume(3,k) = volume_3.volume_3;
+%longitudinal_FLAIR_volume(1,k) = volume_1.volume_1;
+%longitudinal_FLAIR_volume(2,k) = volume_2.volume_2;
+%longitudinal_FLAIR_volume(3,k) = volume_3.volume_3;
 
 
 try
@@ -226,7 +226,7 @@ figure
 boxplot([result_sienapd(2,:)' result_sienapd(4,:)'],image)
 ylabel('volume SEL identificate','FontSize',18,'Interpreter','latex')
 
-% Correlazione di Pearson e p-value
+% Correlazione di Spearman e p-value
 siena_correlazione = [result_sienapd(1,:)' result_sienapd(3,:)'];
 [R_siena,coeff_p_value_siena] = corr(siena_correlazione,'Type','Spearman');
 
@@ -514,29 +514,37 @@ figure
 boxplot([result_resampled_FLAIR(2,:)' result_resampled_T2(2,:)' result_resampled_FLAIR(4,:)' result_resampled_T2(4,:)'],nomi_2)
 ylabel('volume SEL identificate','FontSize',18,'Interpreter','latex')
 
-x = [1 2 3]
-vals2 = [dim1 dim3 dim5; dim2 dim4 dim6];
+x = [1 2]
+vals2 = [dim1; dim3; dim5; dim1; dim3; dim5 ];
+% Confronto FLAIR/T2 per ogni metodo
 
 figure
 b = bar(x,vals2);
 xtips1 = b(1).XEndPoints;
 ytips1 = b(1).YEndPoints;
 labels1 = string(b(1).YData);
-text(xtips1,ytips1,labels1,'HorizontalAlignment','center','VerticalAlignment','bottom')
+text(xtips1,ytips1,labels1,'HorizontalAlignment','center','VerticalAlignment','bottom','Interpreter','latex')
 xtips2 = b(2).XEndPoints;
 ytips2 = b(2).YEndPoints;
 labels2 = string(b(2).YData);
-text(xtips2,ytips2,labels2,'HorizontalAlignment','center','VerticalAlignment','bottom')
+text(xtips2,ytips2,labels2,'HorizontalAlignment','center','VerticalAlignment','bottom','Interpreter','latex')
 grid on
 ylabel('numero soggetti con SEL','FontSize',16,'Interpreter','latex')
-legend({'SIENA','FreeSurfer','1x1x3 mm'},'Location','northwest','interpreter','latex','FontSize',12)
+legend({'FLAIR','T2-w'},'Location','northwest','interpreter','latex','FontSize',12)
 ylim([0 43])
 ax = gca;
-ax.XTick = [1 2]; 
-ax.XTickLabels = {'FLAIR','T2-w','FontSize',16,'Interpreter','latex'};
+ax.XTick = [1 2 3]; 
+ax.XTickLabels = {'SIENA','FreeSurfer','1x1x3 mm','FontSize',16,'Interpreter','latex'};
 ax.XTickLabelRotation = 0;
 
 x = [1];
 vals1 = [dim3_copia; dim5_copia];
+
+%% longitudinal analysis
+
+nomi_2 = char('baseline-I','I-II','II-followup');
+figure
+boxplot([longitudinal_T2_volume(1,:)' longitudinal_T2_volume(2,:)' longitudinal_T2_volume(3,:)'],nomi_2)
+ylabel('volume SEL identificate','FontSize',18,'Interpreter','latex')
 
 
