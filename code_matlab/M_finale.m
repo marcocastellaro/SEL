@@ -5,12 +5,12 @@ clc
 %base_directory = '/nfsd/biopetmri/BACKUP/Users/Marco/3T_Verona/SEL_candidates';
 base_directory = 'F:\Utente\TESI';
 
-output_path=fullfile(base_directory,'output');
+output_path_4=fullfile(base_directory,'output');
 
 output_summury=fullfile(base_directory,'output_summary');
 
-list_output=dir(output_path);
-dim=length(list_output)-2;
+list_output_4=dir(output_path_4);
+dim=length(list_output_4)-2;
 
 sienapd_FLAIR = zeros(1,dim);
 sienapd_T2 = zeros(1,dim);
@@ -40,18 +40,18 @@ subj_path_output= fullfile(output_path, subjID_output);
 subj_output_list=dir(subj_path_output);
 
 try
-CC_SEL_sienapd_FLAIR = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_sienapd','FLAIR_T1','Jacobian','num_CC_SEL_FLAIR.mat'));
-volume_1 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_sienapd','FLAIR_T1','Jacobian','volume.mat'));
+CC_SEL_sienapd_FLAIR = load(fullfile(subj_path_output,subj_output_list_4(3).name,'registration_sienapd','FLAIR_T1','Jacobian','num_CC_SEL_FLAIR.mat'));
+volume_1_FLAIR = load(fullfile(subj_path_output,subj_output_list_4(3).name,'registration_sienapd','FLAIR_T1','Jacobian','volume.mat'));
 catch
     CC_SEL_sienapd_FLAIR.num_CC_SEL_FLAIR = NaN;
-    volume_1.volume = NaN;
+    volume_1_FLAIR.volume = NaN;
 end
 sienapd_FLAIR(1,k) = CC_SEL_sienapd_FLAIR.num_CC_SEL_FLAIR;
-volume_sienapd_FLAIR(1,k) = volume_1.volume;
+volume_sienapd_FLAIR(1,k) = volume_1_FLAIR.volume;
 
 try
-CC_SEL_sienapd_T2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_sienapd','T2_T1','Jacobian','num_CC_SEL_T2.mat'));
-volume_SEL_sienapd_T2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_sienapd','T2_T1','Jacobian','volume.mat'));
+CC_SEL_sienapd_T2 = load(fullfile(subj_path_output_4,subj_output_list_4(3).name,'registration_sienapd','T2_T1','Jacobian','num_CC_SEL_T2.mat'));
+volume_SEL_sienapd_T2 = load(fullfile(subj_path_output_4,subj_output_list_4(3).name,'registration_sienapd','T2_T1','Jacobian','volume.mat'));
 catch
     CC_SEL_sienapd_T2.num_CC_SEL_T2 = NaN;
     volume_SEL_sienapd_T2.volume = NaN;
@@ -61,8 +61,8 @@ volume_sienapd_T2(1,k) = volume_SEL_sienapd_T2.volume;
 
 try
     
-CC_SEL_robust_FLAIR = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_robust_template','FLAIR_T1','Jacobian','num_CC_SEL_FLAIR.mat'));
-volume_SEL_robust_FLAIR = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_robust_template','FLAIR_T1','Jacobian','volume.mat'));
+CC_SEL_robust_FLAIR = load(fullfile(subj_path_output_4,subj_output_list_4(3).name,'registration_robust_template','FLAIR_T1','Jacobian','num_CC_SEL_FLAIR.mat'));
+volume_SEL_robust_FLAIR = load(fullfile(subj_path_output_4,subj_output_list_4(3).name,'registration_robust_template','FLAIR_T1','Jacobian','volume.mat'));
 catch
     CC_SEL_robust_FLAIR.num_CC_SEL_FLAIR = NaN;
     volume_SEL_robust_FLAIR.volume = NaN;
@@ -72,8 +72,8 @@ robust_FLAIR(1,k) = CC_SEL_robust_FLAIR.num_CC_SEL_FLAIR;
 volume_robust_FLAIR(1,k) = volume_SEL_robust_FLAIR.volume;
 
 try
-CC_SEL_robust_T2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_robust_template','T2_T1','Jacobian','num_CC_SEL_T2.mat'));
-volume_SEL_robust_T2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_robust_template','T2_T1','Jacobian','volume.mat'));
+CC_SEL_robust_T2 = load(fullfile(subj_path_output_4,subj_output_list_4(3).name,'registration_robust_template','T2_T1','Jacobian','num_CC_SEL_T2.mat'));
+volume_SEL_robust_T2 = load(fullfile(subj_path_output_4,subj_output_list_4(3).name,'registration_robust_template','T2_T1','Jacobian','volume.mat'));
 catch
 
     CC_SEL_robust_T2.num_CC_SEL_T2 = NaN;
@@ -84,8 +84,8 @@ robust_T2(1,k) = CC_SEL_robust_T2.num_CC_SEL_T2;
 volume_robust_T2(1,k) = volume_SEL_robust_T2.volume;
 
 try
-CC_SEL_resampled_FLAIR = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_resampled','FLAIR_T1','Jacobian','num_CC_SEL_FLAIR.mat'));
-volume_SEL_resampled_FLAIR = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_resampled','FLAIR_T1','Jacobian','volume.mat'));
+CC_SEL_resampled_FLAIR = load(fullfile(subj_path_output_4,subj_output_list_4(3).name,'registration_resampled','FLAIR_T1','Jacobian','num_CC_SEL_FLAIR.mat'));
+volume_SEL_resampled_FLAIR = load(fullfile(subj_path_output_4,subj_output_list_4(3).name,'registration_resampled','FLAIR_T1','Jacobian','volume.mat'));
 catch
     CC_SEL_resampled_FLAIR.num_CC_SEL_FLAIR = NaN;
     volume_SEL_resampled_FLAIR.volume = NaN;    
@@ -94,8 +94,8 @@ resampled_FLAIR(1,k) = CC_SEL_resampled_FLAIR.num_CC_SEL_FLAIR;
 volume_resampled_FLAIR(1,k) = volume_SEL_resampled_FLAIR.volume*3;
 
 try
-CC_SEL_resampled_T2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_resampled','T2_T1','Jacobian','num_CC_SEL_T2.mat'));
-volume_SEL_resampled_T2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_resampled','T2_T1','Jacobian','volume.mat'));
+CC_SEL_resampled_T2 = load(fullfile(subj_path_output_4,subj_output_list_4(3).name,'registration_resampled','T2_T1','Jacobian','num_CC_SEL_T2.mat'));
+volume_SEL_resampled_T2 = load(fullfile(subj_path_output_4,subj_output_list_4(3).name,'registration_resampled','T2_T1','Jacobian','volume.mat'));
 catch
     CC_SEL_resampled_T2.num_CC_SEL_T2 = NaN;
     volume_SEL_resampled_T2.volume = NaN;    
@@ -137,8 +137,9 @@ dim6 = dim6(2);
 
 
 %% Analisi longitudinale
+base_directory = 'F:\Utente\TESI';
 
-output_path=fullfile(base_directory,'output_longitudinal');
+output_path=fullfile(base_directory,'output_longitudinal_4');
 list_output=dir(output_path);
 dim=length(list_output)-2;
 
@@ -154,55 +155,55 @@ subjID_output = list_output(t).name;
 subj_path_output= fullfile(output_path, subjID_output);
 subj_output_list=dir(subj_path_output);
 
-%try
-%CC_SEL_1 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','num_CC_SEL_1.mat'));
-%volume_1 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','volume_1.mat'));
-%CC_SEL_2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','num_CC_SEL_2.mat'));
-%volume_2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','volume_2.mat'));
-%CC_SEL_3 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','num_CC_SEL_3.mat'));
-%volume_3 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','volume_3.mat'));
+try
+CC_SEL_1 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','num_CC_SEL_1.mat'));
+volume_1 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','volume_1.mat'));
+CC_SEL_2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','num_CC_SEL_2.mat'));
+volume_2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','volume_2.mat'));
+CC_SEL_3 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','num_CC_SEL_3.mat'));
+volume_3 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','volume_3.mat'));
 
-%catch
- %   CC_SEL_1.num_CC_SEL_1 = NaN;
-  %  volume_1.volume_1 = NaN;
-   % CC_SEL_2.num_CC_SEL_2 = NaN;
-   % volume_2.volume_2 = NaN;
-   % CC_SEL_3.num_CC_SEL_3 = NaN;
-   % volume_3.volume_3 = NaN;
-%end
+catch
+   CC_SEL_1.num_CC_SEL_1 = NaN;
+   volume_1.volume_1 = NaN;
+   CC_SEL_2.num_CC_SEL_2 = NaN;
+   volume_2.volume_2 = NaN;
+   CC_SEL_3.num_CC_SEL_3 = NaN;
+   volume_3.volume_3 = NaN;
+end
 
-%longitudinal_FLAIR_SEL(1,k) = CC_SEL_1.num_CC_SEL_1;
-%longitudinal_FLAIR_SEL(2,k) = CC_SEL_2.num_CC_SEL_2;
-%longitudinal_FLAIR_SEL(3,k) = CC_SEL_3.num_CC_SEL_3;
+longitudinal_FLAIR_SEL(1,k) = CC_SEL_1.num_CC_SEL_1;
+longitudinal_FLAIR_SEL(2,k) = CC_SEL_2.num_CC_SEL_2;
+longitudinal_FLAIR_SEL(3,k) = CC_SEL_3.num_CC_SEL_3;
 
-%longitudinal_FLAIR_volume(1,k) = volume_1.volume_1;
-%longitudinal_FLAIR_volume(2,k) = volume_2.volume_2;
-%longitudinal_FLAIR_volume(3,k) = volume_3.volume_3;
+longitudinal_FLAIR_volume(1,k) = volume_1.volume_1;
+longitudinal_FLAIR_volume(2,k) = volume_2.volume_2;
+longitudinal_FLAIR_volume(3,k) = volume_3.volume_3;
 
 
 try
-CC_SEL_1 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','T2_T1','Jacobian','num_CC_SEL_1.mat'));
-volume_1 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','T2_T1','Jacobian','volume_1.mat'));
-CC_SEL_2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','T2_T1','Jacobian','num_CC_SEL_2.mat'));
-volume_2 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','T2_T1','Jacobian','volume_2.mat'));
+CC_SEL_1_FLAIR = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','T2_T1','Jacobian','num_CC_SEL_1.mat'));
+volume_1_FLAIR = load(fullfile(subj_path_output_4,subj_output_list(3).name,'registration_longitudinal','T2_T1','Jacobian','volume_1.mat'));
+CC_SEL_2_FLAIR = load(fullfile(subj_path_output_4,subj_output_list(3).name,'registration_longitudinal','T2_T1','Jacobian','num_CC_SEL_2.mat'));
+volume_2_FLAIR = load(fullfile(subj_path_output_4,subj_output_list(3).name,'registration_longitudinal','T2_T1','Jacobian','volume_2.mat'));
 CC_SEL_3 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','T2_T1','Jacobian','num_CC_SEL_3.mat'));
 volume_3 = load(fullfile(subj_path_output,subj_output_list(3).name,'registration_longitudinal','T2_T1','Jacobian','volume_3.mat'));
 
 catch
-    CC_SEL_1.num_CC_SEL_1 = NaN;
-    volume_1.volume_1 = NaN;
-    CC_SEL_2.num_CC_SEL_2 = NaN;
-    volume_2.volume_2 = NaN;
+    CC_SEL_1_FLAIR.num_CC_SEL_1 = NaN;
+    volume_1_FLAIR.volume_1 = NaN;
+    CC_SEL_2_FLAIR.num_CC_SEL_2 = NaN;
+    volume_2_FLAIR.volume_2 = NaN;
     CC_SEL_3.num_CC_SEL_3 = NaN;
     volume_3.volume_3 = NaN;
 end
 
-longitudinal_T2_SEL(1,k) = CC_SEL_1.num_CC_SEL_1;
-longitudinal_T2_SEL(2,k) = CC_SEL_2.num_CC_SEL_2;
+longitudinal_T2_SEL(1,k) = CC_SEL_1_FLAIR.num_CC_SEL_1;
+longitudinal_T2_SEL(2,k) = CC_SEL_2_FLAIR.num_CC_SEL_2;
 longitudinal_T2_SEL(3,k) = CC_SEL_3.num_CC_SEL_3;
 
-longitudinal_T2_volume(1,k) = volume_1.volume_1;
-longitudinal_T2_volume(2,k) = volume_2.volume_2;
+longitudinal_T2_volume(1,k) = volume_1_FLAIR.volume_1;
+longitudinal_T2_volume(2,k) = volume_2_FLAIR.volume_2;
 longitudinal_T2_volume(3,k) = volume_3.volume_3;
 
 k = k+1;
@@ -211,6 +212,15 @@ end
 %save(fullfile(output_summury,'result_sienapd'), 'result_sienapd');
 %save(fullfile(output_summury,'result_robust'), 'result_robust');
 %save(fullfile(output_summury,'result_resampled'), 'result_resampled');
+nomi_2 = char('baseline-I','I-II','II-followup');
+figure
+boxplot([longitudinal_FLAIR_volume(1,:)' longitudinal_FLAIR_volume(2,:)' longitudinal_FLAIR_volume(3,:)'],nomi_2)
+ylabel('volume SEL identificate','FontSize',18,'Interpreter','latex')
+
+nomi_2 = char('baseline-I','I-II','II-followup');
+figure
+boxplot([longitudinal_FLAIR_SEL(1,:)' longitudinal_FLAIR_SEL(2,:)' longitudinal_FLAIR_SEL(3,:)'],nomi_2)
+ylabel('numero SEL identificate','FontSize',18,'Interpreter','latex')
 
 
 %% RISULTATI SIENA
@@ -541,10 +551,146 @@ x = [1];
 vals1 = [dim3_copia; dim5_copia];
 
 %% longitudinal analysis
+clear all
+close all
+clc
 
-nomi_2 = char('baseline-I','I-II','II-followup');
+%base_directory = '/nfsd/biopetmri/BACKUP/Users/Marco/3T_Verona/SEL_candidates';
+base_directory = 'F:\Utente\TESI';
+
+output_path_4=fullfile(base_directory,'output_longitudinal_4');
+output_path_2=fullfile(base_directory,'output_longitudinal_2');
+
+list_output_4=dir(output_path_4);
+dim=length(list_output_4)-2;
+
+list_output_2=dir(output_path_4);
+dim=length(list_output_2)-2;
+
+
+longitudinal_FLAIR = zeros(4,dim);
+longitudinal_T2 = zeros(4,dim);
+
+k = 1;
+for t=3:1:length(list_output_4)
+
+subjID_output_4 = list_output_4(t).name;
+subj_path_output_4= fullfile(output_path_4, subjID_output_4);
+subj_output_list_4=dir(subj_path_output_4);
+
+subjID_output_2 = list_output_2(t).name;
+subj_path_output_2= fullfile(output_path_2, subjID_output_4);
+subj_output_list_2=dir(subj_path_output_2);
+
+
+
+try
+CC_SEL_1_FLAIR = load(fullfile(subj_path_output_4,subj_output_list_4(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','num_CC_SEL_FLAIR.mat'));
+volume_1_FLAIR = load(fullfile(subj_path_output_4,subj_output_list_4(3).name,'registration_longitudinal','FLAIR_T1','Jacobian','volume_SEL_FLAIR.mat'));
+CC_SEL_2_FLAIR = load(fullfile(subj_path_output_2,subj_output_list_2(3).name,'registration_robust_template','FLAIR_T1','Jacobian','num_CC_SEL_FLAIR.mat'));
+volume_2_FLAIR = load(fullfile(subj_path_output_2,subj_output_list_2(3).name,'registration_robust_template','FLAIR_T1','Jacobian','volume.mat'));
+
+catch
+   CC_SEL_1_FLAIR.num_CC_SEL_FLAIR = NaN;
+   volume_1_FLAIR.volume_SEL_FLAIR = NaN;
+   CC_SEL_2_FLAIR.num_CC_SEL_FLAIR = NaN;
+   volume_2_FLAIR.volume = NaN;
+   
+   
+end
+
+longitudinal_FLAIR(1,k) = CC_SEL_1_FLAIR.num_CC_SEL_FLAIR;
+longitudinal_FLAIR(2,k) = volume_1_FLAIR.volume_SEL_FLAIR;
+longitudinal_FLAIR(3,k) = CC_SEL_2_FLAIR.num_CC_SEL_FLAIR;
+longitudinal_FLAIR(4,k) = volume_2_FLAIR.volume;
+
+try
+CC_SEL_1_T2 = load(fullfile(subj_path_output_4,subj_output_list_4(3).name,'registration_longitudinal','T2_T1','Jacobian','num_CC_SEL_T2.mat'));
+volume_1_T2 = load(fullfile(subj_path_output_4,subj_output_list_4(3).name,'registration_longitudinal','T2_T1','Jacobian','volume_SEL_T2.mat'));
+CC_SEL_2_T2 = load(fullfile(subj_path_output_2,subj_output_list_2(3).name,'registration_robust_template','T2_T1','Jacobian','num_CC_SEL_T2.mat'));
+volume_2_T2 = load(fullfile(subj_path_output_2,subj_output_list_2(3).name,'registration_robust_template','T2_T1','Jacobian','volume.mat'));
+
+catch
+    CC_SEL_1_T2.num_CC_SEL_T2 = NaN;
+    volume_1_T2.volume_SEL_T2 = NaN;
+    CC_SEL_2_T2.num_CC_SEL_T2 = NaN;
+    volume_2_T2.volume = NaN;
+end
+
+longitudinal_T2(1,k) = CC_SEL_1_T2.num_CC_SEL_T2;
+longitudinal_T2(2,k) = volume_1_T2.volume_SEL_T2;
+longitudinal_T2(3,k) = CC_SEL_2_T2.num_CC_SEL_T2;
+longitudinal_T2(4,k) = volume_2_T2.volume;
+
+k = k+1;
+end
+
+%% FLAIR
+
+nomi_3 = char('2-timepoint','4-timepoint');
 figure
-boxplot([longitudinal_T2_volume(1,:)' longitudinal_T2_volume(2,:)' longitudinal_T2_volume(3,:)'],nomi_2)
-ylabel('volume SEL identificate','FontSize',18,'Interpreter','latex')
+boxplot([longitudinal_FLAIR(3,:)' longitudinal_FLAIR(1,:)'],nomi_3)
+ylabel('numero SEL identificate','FontSize',18,'Interpreter','latex')
+ylim([0 15])
+
+long_T2_correlazione = [longitudinal_FLAIR(3,:)' longitudinal_FLAIR(1,:)'];
+[R_long_T2,coeff_p_value_long_T2] = corr(long_T2_correlazione,'Type','Spearman');
+
+G = longitudinal_FLAIR(1,:)';
+p_est = ((G'*G)^(-1))*G'*longitudinal_FLAIR(3,:)';
+m = p_est(1);
+
+figure1 = figure;
+axes1 = axes('Parent',figure1);
+hold(axes1,'on');
+plot(longitudinal_FLAIR(1,:)',m*longitudinal_FLAIR(1,:)','DisplayName','retta di regressione','Color',[1 0 0]);
+scatter(longitudinal_FLAIR(1,:)', longitudinal_FLAIR(3,:)','b','DisplayName','soggetto')
+ylabel('2-timepoint','FontSize',16,'Interpreter','latex','Rotation',90);
+xlabel('4-timepoint','FontSize',16,'Interpreter','latex');
+xlim(axes1,[0 15]);
+ylim(axes1,[0 15]);
+grid(axes1,'on');
+hold(axes1,'off');
+set(axes1,'FontSize',12,'TickLabelInterpreter','latex','XMinorTick','on',...
+    'YMinorTick','on');
+legend1 = legend(axes1,'show');
+set(legend1,'Location','northeast','Interpreter','latex','FontSize',12);
+
+
+
+
+
+
+%% T2
+
+nomi_3 = char('2-timepoint','4-timepoint');
+figure
+boxplot([longitudinal_T2(3,:)' longitudinal_T2(1,:)'],nomi_3)
+ylabel('numero SEL identificate','FontSize',18,'Interpreter','latex')
+ylim([0 15])
+
+long_T2_correlazione = [longitudinal_T2(3,:)' longitudinal_T2(1,:)'];
+[R_long_T2,coeff_p_value_long_T2] = corr(long_T2_correlazione,'Type','Spearman');
+
+G = longitudinal_T2(1,:)';
+p_est = ((G'*G)^(-1))*G'*longitudinal_T2(3,:)';
+m = p_est(1);
+
+figure1 = figure;
+axes1 = axes('Parent',figure1);
+hold(axes1,'on');
+plot(longitudinal_T2(1,:)',m*longitudinal_T2(1,:)','DisplayName','retta di regressione','Color',[1 0 0]);
+scatter(longitudinal_T2(1,:)', longitudinal_T2(3,:)','b','DisplayName','soggetto')
+ylabel('2-timepoint','FontSize',16,'Interpreter','latex','Rotation',90);
+xlabel('4-timepoint','FontSize',16,'Interpreter','latex');
+xlim(axes1,[0 15]);
+ylim(axes1,[0 15]);
+grid(axes1,'on');
+hold(axes1,'off');
+set(axes1,'FontSize',12,'TickLabelInterpreter','latex','XMinorTick','on',...
+    'YMinorTick','on');
+legend1 = legend(axes1,'show');
+set(legend1,'Location','northeast','Interpreter','latex','FontSize',12);
+
 
 

@@ -1,8 +1,6 @@
-function [SEL_finale,CC_SEL_finale] = longitudinal_analysis(lesion_baseline_img,nak_detJ_1_img,nak_detJ_2_img,nak_detJ_3_img)
+function [SEL,CC_SEL] = longitudinal_analysis(lesion_baseline_img,nak_detJ_1_img,nak_detJ_2_img,nak_detJ_3_img)
 
 voxel = find(lesion_baseline_img);
-CC_baseline = bwconncomp(lesion_baseline_img,18);
-num_CC_baseline = CC_baseline.NumObjects;
 
 %fit dello Jacobiano di questi voxel
 y = [nak_detJ_1_img(voxel)' ; nak_detJ_2_img(voxel)' ; nak_detJ_3_img(voxel)'];
@@ -120,10 +118,11 @@ CC_coeff_ang = bwconncomp(immagine_coeff_ang_th,18);
 % CC_dilate_coeff_ang = bwconncomp(good_cv,18);
 % 
 % num_CC = CC_dilate_coeff_ang.NumObjects;
-
+num_minimo_voxel = 30;
+% 
 % % Creo la matrice che successivamente conterrà i candidati SEL finali 
 % SEL = good_cv;
-num_minimo_voxel = 30;
+
 num_CC = CC_coeff_ang.NumObjects;
 SEL = immagine_coeff_ang_th;
 
@@ -138,32 +137,9 @@ for i = 1:num_CC
     end
 end
 
+perc_voxel = z
+
 CC_SEL = bwconncomp(SEL,18);
 num_CC_SEL = CC_SEL.NumObjects;
-
-perc_voxel = zeros(num_CC_baseline,num_CC_SEL);
-
-for i=1:num_CC_baseline
-    for j = 1:num_CC_SEL
-        vet_diff = setdiff(CC_SEL.PixelIdxList{1,j},CC_baseline.PixelIdxList{1,i});
-        dim = size(CC_SEL.PixelIdxList{1,j});    
-        dim = dim(1);
-        vet_diff =  dim - length(vet_diff);
-        perc_voxel(i,j) = (vet_diff/dim)*100;
-    end
-end
-
-perc_voxel = perc_voxel > 80;
-SEL_finale = zeros(180,240,240);
-pos = 0;
-
-for i = 1:num_CC_SEL
-            pos = find(perc_voxel(:,i));
-            SEL_finale(CC_baseline.PixelIdxList{1,pos}) = 1;
-            pos = 0;
-   
-end
-
-CC_SEL_finale = bwconncomp(SEL_finale,18);
 
 end
